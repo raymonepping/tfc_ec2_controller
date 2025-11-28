@@ -28,12 +28,3 @@ output "alb_dns_name" {
   value       = module.alb.dns_name
 }
 
-output "selected_ami" {
-  description = "AMI used for the EC2 instances"
-  value = {
-    id               = local.effective_ami_id
-    owners           = var.ami_owners
-    patterns         = var.ami_name_patterns
-    platform_details = var.ami_platform_details
-  }
-}

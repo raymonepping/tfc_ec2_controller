@@ -92,25 +92,11 @@ variable "enable_aap_actions" {
 }
 
 variable "ami_id" {
-  description = "Optional explicit AMI ID to use. If set, lookup is skipped and this ID is used directly."
+  description = "AMI ID to use for the EC2 instances (pre-selected via ami_lookup.sh)."
   type        = string
-  default     = ""
 }
 
-variable "ami_owners" {
-  description = "AMI owners to restrict search. Default is the official Red Hat account."
+variable "subnet_ids" {
+  description = "List of subnet IDs in the VPC. Used for ALB and for picking an instance subnet."
   type        = list(string)
-  default     = ["309956199498"] # Red Hat
-}
-
-variable "ami_name_patterns" {
-  description = "Name patterns for the AMI search. Default is RHEL 10 images."
-  type        = list(string)
-  default     = ["RHEL-10*"]
-}
-
-variable "ami_platform_details" {
-  description = "Platform details filter. For RHEL use [\"Red Hat Enterprise Linux\"]. Empty disables this filter."
-  type        = list(string)
-  default     = ["Red Hat Enterprise Linux"]
 }

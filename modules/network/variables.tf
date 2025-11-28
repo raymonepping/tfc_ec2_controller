@@ -1,32 +1,37 @@
 variable "vpc_id" {
-  description = "VPC ID. If null, the default VPC is used."
+  description = "VPC ID where the security group and rules are created."
   type        = string
-  default     = null
+}
+
+variable "subnet_ids" {
+  description = "List of subnet IDs in the VPC. Used for ALB and for choosing one subnet for EC2."
+  type        = list(string)
 }
 
 variable "subnet_id" {
-  description = "Subnet ID. If null, a default subnet for the VPC is used."
+  description = "Optional explicit subnet ID for EC2 instances. If empty, the first subnet_ids element is used."
   type        = string
-  default     = null
+  default     = ""
 }
 
 variable "security_group_name" {
-  description = "Name of the security group."
+  description = "Name for the EC2 instances security group."
   type        = string
-}
-
-variable "ssh_ingress_cidr" {
-  description = "CIDR blocks allowed for SSH."
-  type        = list(string)
-}
-
-variable "http_ingress_cidr" {
-  description = "CIDR blocks allowed for HTTP."
-  type        = list(string)
 }
 
 variable "tags" {
   description = "Tags to apply to the security group."
   type        = map(string)
-  default     = {}
+}
+
+variable "ssh_ingress_cidr" {
+  description = "CIDR blocks allowed to access SSH (port 22)."
+  type        = set(string)
+  default     = ["0.0.0.0/0"]  # matches your original behavior
+}
+
+variable "http_ingress_cidr" {
+  description = "CIDR blocks allowed to access HTTP (port 80)."
+  type        = set(string)
+  default     = ["0.0.0.0/0"]  # matches your original behavior
 }

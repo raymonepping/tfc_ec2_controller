@@ -2,6 +2,7 @@ module "network" {
   source = "./modules/network"
 
   vpc_id              = var.vpc_id
+  subnet_ids          = var.subnet_ids
   subnet_id           = var.subnet_id
   security_group_name = var.security_group_name
   ssh_ingress_cidr    = var.ssh_ingress_cidr
@@ -20,7 +21,7 @@ module "compute" {
   subnet_id         = module.network.subnet_id_effective
   security_group_id = module.network.security_group_id
 
-  ami_id = local.effective_ami_id
+  ami_id = var.ami_id
 
   tags = var.tags
 }
