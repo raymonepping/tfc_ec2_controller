@@ -23,6 +23,22 @@ module "tags" {
   extra_tags  = var.extra_tags
 }
 
+module "storage" {
+  source = "./modules/storage"
+
+  create_data_volumes = var.data_volume_enabled
+
+  instance_ids       = module.compute.instance_ids
+  availability_zones = module.compute.instance_azs
+
+  volume_size = var.data_volume_size
+  volume_type = var.data_volume_type
+  device_name = var.data_volume_device_name
+
+  volume_name_prefix = "${var.instance_name_prefix}-data"
+  tags               = module.tags.effective_tags
+}
+
 module "network" {
   source = "./modules/network"
 
@@ -46,12 +62,8 @@ module "compute" {
   tags                 = module.tags.effective_tags
 
   # Storage configuration
-  root_volume_size        = var.root_volume_size
-  root_volume_type        = var.root_volume_type
-  data_volume_enabled     = var.data_volume_enabled
-  data_volume_size        = var.data_volume_size
-  data_volume_type        = var.data_volume_type
-  data_volume_device_name = var.data_volume_device_name
+  root_volume_size = var.root_volume_size
+  root_volume_type = var.root_volume_type
 
   # Lifecycle guardrail input
   architecture = var.architecture

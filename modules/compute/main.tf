@@ -20,19 +20,6 @@ resource "aws_instance" "web_server" {
     delete_on_termination = true
   }
 
-  # Optional data volume
-  dynamic "ebs_block_device" {
-    for_each = var.data_volume_enabled ? [1] : []
-
-    content {
-      device_name           = var.data_volume_device_name
-      volume_size           = var.data_volume_size
-      volume_type           = var.data_volume_type
-      encrypted             = true
-      delete_on_termination = true
-    }
-  }
-
   tags = merge(
     var.tags,
     {
