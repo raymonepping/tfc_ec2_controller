@@ -39,8 +39,13 @@ output "alb_fqdn" {
 }
 
 output "data_volume_ids" {
-  description = "IDs of EBS data volumes created by the storage module"
-  value       = module.storage.volume_ids
+  description = "EBS data volume IDs created for the EC2 instances"
+  value       = try(module.storage.volume_ids, [])
+}
+
+output "data_volume_names" {
+  description = "EBS data volume names created for the EC2 instances"
+  value       = try(module.storage.volume_names, [])
 }
 
 output "data_volume_attachments" {
