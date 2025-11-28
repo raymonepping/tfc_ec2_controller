@@ -128,3 +128,30 @@ variable "data_volume_device_name" {
   type        = string
   default     = "/dev/xvdb"
 }
+
+# Tags for resources
+variable "environment" {
+  description = "Environment name for tagging"
+  type        = string
+}
+
+variable "cost_center" {
+  description = "Cost center for tagging"
+  type        = string
+}
+
+variable "application" {
+  description = "Application name for tagging"
+  type        = string
+}
+
+variable "owner" {
+  description = "Owner or team for tagging"
+  type        = string
+}
+
+variable "extra_tags" {
+  description = "Optional extra tags to merge into the base tag set"
+  type        = map(string)
+  default     = {}
+}

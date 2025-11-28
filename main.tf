@@ -14,6 +14,15 @@ locals {
   ) ? var.instance_subnet_id : var.subnet_ids[0]
 }
 
+module "tags" {
+  source      = "./modules/tags"
+  environment = var.environment
+  cost_center = var.cost_center
+  application = var.application
+  owner       = var.owner
+  extra_tags  = var.extra_tags
+}
+
 module "network" {
   source = "./modules/network"
 
@@ -21,7 +30,7 @@ module "network" {
   security_group_name = var.security_group_name
   ssh_ingress_cidr    = var.ssh_ingress_cidr
   http_ingress_cidr   = var.http_ingress_cidr
-  tags                = var.tags
+  tags                = module.tags.effective_tags
 }
 
 module "compute" {
@@ -34,7 +43,7 @@ module "compute" {
   security_group_id    = module.network.security_group_id
   ssh_key_name         = var.ssh_key_name
   ami_id               = local.effective_ami_id
-  tags                 = var.tags
+  tags                 = module.tags.effective_tags
 
   # Storage configuration
   root_volume_size        = var.root_volume_size
@@ -58,5 +67,5 @@ module "alb" {
   alb_name      = "ec2-demo-alb"
   listener_port = 80
   target_port   = 80
-  tags          = var.tags
+  tags          = module.tags.effective_tags
 }
