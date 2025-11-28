@@ -69,3 +69,15 @@ module "alb" {
   target_port   = 80
   tags          = module.tags.effective_tags
 }
+
+module "dns" {
+  source = "./modules/dns"
+
+  create_record = var.create_dns_record
+  zone_id       = var.route53_zone_id
+  record_name   = var.route53_record_name
+
+  alb_dns_name = module.alb.alb_dns_name
+  alb_zone_id  = module.alb.alb_zone_id
+
+}

@@ -32,3 +32,7 @@ data_volume_enabled     = true
 data_volume_size        = 50
 data_volume_type        = "gp3"
 data_volume_device_name = "/dev/xvdb"
+
+create_dns_record   = true
+route53_zone_id     = "Z123EXAMPLEZONEID"
+route53_record_name = "ec2-demo.example.com"

@@ -155,3 +155,21 @@ variable "extra_tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "create_dns_record" {
+  description = "Whether to create a Route53 record for the ALB"
+  type        = bool
+  default     = false
+}
+
+variable "route53_zone_id" {
+  description = "Route53 hosted zone id where the record will be created"
+  type        = string
+  default     = ""
+}
+
+variable "route53_record_name" {
+  description = "DNS record name for the ALB, for example ec2-demo.example.com"
+  type        = string
+  default     = ""
+}

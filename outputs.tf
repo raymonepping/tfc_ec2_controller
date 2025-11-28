@@ -32,3 +32,4 @@ output "instance_azs" {
   description = "Availability zones of the EC2 instances created by the compute module."
   value       = module.compute.instance_azs
 }
+
