@@ -67,3 +67,9 @@ variable "data_volume_device_name" {
   description = "Device name to use for the additional data volume."
   type        = string
 }
+
+variable "architecture" {
+  description = "Expected AMI architecture, used for lifecycle precondition checks"
+  type        = string
+  default     = "x86_64"
+}
