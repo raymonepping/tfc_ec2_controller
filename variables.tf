@@ -1,50 +1,77 @@
+##############################################################################
+# Root variables
+##############################################################################
+
 variable "region" {
-  description = "AWS region where the instances are created."
+  description = "AWS region to deploy into"
   type        = string
   default     = "eu-north-1"
 }
 
-variable "instance_name_prefix" {
-  description = "Prefix for the Name tag of EC2 instances."
+variable "vpc_id" {
+  description = "Existing VPC ID where EC2 and ALB will live"
   type        = string
-  default     = "test"
+}
+
+variable "subnet_ids" {
+  description = "List of subnet IDs in the VPC, used by ALB and EC2"
+  type        = list(string)
+}
+
+variable "instance_subnet_id" {
+  description = "Subnet ID to place EC2 instances in. If null, the first element of subnet_ids is used."
+  type        = string
+  default     = null
 }
 
 variable "instance_type" {
-  description = "EC2 instance type."
+  description = "EC2 instance type"
   type        = string
   default     = "t3.micro"
 }
 
 variable "instance_count" {
-  description = "Number of EC2 instances to create."
+  description = "Number of EC2 instances behind the ALB"
   type        = number
   default     = 2
 }
 
-variable "subnet_id" {
-  description = "Existing subnet ID to launch the instances in."
+variable "instance_name_prefix" {
+  description = "Prefix for the Name tag of EC2 instances"
   type        = string
-}
-
-variable "security_group_id" {
-  description = "Existing security group ID to attach to the instances."
-  type        = string
-}
-
-variable "ami_id" {
-  description = "AMI ID to use for the EC2 instances."
-  type        = string
+  default     = "rhel-demo"
 }
 
 variable "ssh_key_name" {
-  description = "Name of the SSH key pair to use for the instances."
+  description = "Existing EC2 key pair name"
   type        = string
-  default     = "my-keypair"
+}
+
+variable "security_group_name" {
+  description = "Name for the EC2 instance security group"
+  type        = string
+  default     = "ec2-instances-sg"
+}
+
+variable "ssh_ingress_cidr" {
+  description = "CIDR ranges allowed to SSH to the instances"
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}
+
+variable "http_ingress_cidr" {
+  description = "CIDR ranges allowed to HTTP to the instances"
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}
+
+variable "ami_id" {
+  description = "AMI ID for the EC2 instances (for example RHEL 10 free tier from ami_lookup.sh)"
+  type        = string
 }
 
 variable "tags" {
-  description = "Tags to apply to all instances."
+  description = "Tags to apply to all resources"
   type        = map(string)
   default = {
     Terraform  = "true"
@@ -52,4 +79,44 @@ variable "tags" {
     OS         = "RHEL"
     Role       = "webserver"
   }
+}
+
+##############################################################################
+# Storage configuration
+##############################################################################
+
+variable "root_volume_size" {
+  description = "Root volume size in GiB for the EC2 instances."
+  type        = number
+  default     = 20
+}
+
+variable "root_volume_type" {
+  description = "Root volume type for the EC2 instances."
+  type        = string
+  default     = "gp3"
+}
+
+variable "data_volume_enabled" {
+  description = "Whether to attach an additional data volume to each EC2 instance."
+  type        = bool
+  default     = false
+}
+
+variable "data_volume_size" {
+  description = "Size in GiB for the additional data volume."
+  type        = number
+  default     = 20
+}
+
+variable "data_volume_type" {
+  description = "Volume type for the additional data volume."
+  type        = string
+  default     = "gp3"
+}
+
+variable "data_volume_device_name" {
+  description = "Device name to use for the additional data volume."
+  type        = string
+  default     = "/dev/xvdb"
 }

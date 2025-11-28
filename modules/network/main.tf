@@ -1,20 +1,6 @@
 ##############################################################################
-# Network module (ID-driven, no Describe* calls)
-#
-# - Uses provided VPC ID and subnet IDs
-# - Creates one security group with rules-only pattern
-# - Exposes:
-#     - vpc_id
-#     - subnet_ids
-#     - subnet_id_effective (for EC2)
-#     - security_group_id
+# Security group in existing VPC (rules only pattern)
 ##############################################################################
-
-locals {
-  # If a specific subnet_id is provided, use it.
-  # Otherwise, fall back to the first subnet in subnet_ids.
-  subnet_id_effective = var.subnet_id != "" ? var.subnet_id : var.subnet_ids[0]
-}
 
 resource "aws_security_group" "this" {
   name                   = var.security_group_name
@@ -30,9 +16,8 @@ resource "aws_security_group" "this" {
   )
 }
 
-# SSH ingress rules (rules-only)
 resource "aws_vpc_security_group_ingress_rule" "ssh_ingress" {
-  for_each = var.ssh_ingress_cidr
+  for_each = toset(var.ssh_ingress_cidr)
 
   security_group_id = aws_security_group.this.id
   description       = "SSH Access"
@@ -46,9 +31,8 @@ resource "aws_vpc_security_group_ingress_rule" "ssh_ingress" {
   }
 }
 
-# HTTP ingress rules (rules-only)
 resource "aws_vpc_security_group_ingress_rule" "http_ingress" {
-  for_each = var.http_ingress_cidr
+  for_each = toset(var.http_ingress_cidr)
 
   security_group_id = aws_security_group.this.id
   description       = "HTTP Access"
@@ -62,8 +46,7 @@ resource "aws_vpc_security_group_ingress_rule" "http_ingress" {
   }
 }
 
-# Egress rules: allow all outbound
-resource "aws_vpc_security_group_egress_rule" "all_outbound_egress" {
+resource "aws_vpc_security_group_egress_rule" "all_outbound" {
   security_group_id = aws_security_group.this.id
 
   description = "Allow all outbound traffic"

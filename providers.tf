@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 1.0.0"
+  required_version = ">= 1.6.0"
 
   required_providers {
     aws = {
@@ -9,9 +9,9 @@ terraform {
   }
 }
 
-# Configure the AWS Provider
 provider "aws" {
   region = var.region
+
   default_tags {
     tags = {
       ManagedBy = "HCP Terraform"

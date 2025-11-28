@@ -4,36 +4,66 @@ variable "instance_type" {
 }
 
 variable "instance_count" {
-  description = "Number of EC2 instances to create"
+  description = "Number of EC2 instances"
   type        = number
 }
 
 variable "instance_name_prefix" {
-  description = "Prefix for the instance Name tag"
-  type        = string
-}
-
-variable "ssh_key_name" {
-  description = "SSH key pair name"
+  description = "Prefix for the EC2 Name tag"
   type        = string
 }
 
 variable "subnet_id" {
-  description = "Subnet ID where instances will be created"
+  description = "Subnet ID where EC2 instances will be launched"
   type        = string
 }
 
 variable "security_group_id" {
-  description = "Security group ID for the instances"
+  description = "Security group ID to attach to the instances"
+  type        = string
+}
+
+variable "ssh_key_name" {
+  description = "EC2 key pair name"
+  type        = string
+}
+
+variable "ami_id" {
+  description = "AMI ID for the EC2 instances"
   type        = string
 }
 
 variable "tags" {
-  description = "Base tags to apply to instances"
+  description = "Tags to apply to instances"
   type        = map(string)
 }
 
-variable "ami_id" {
-  description = "AMI ID for the EC2 instances (resolved in the root module)"
+variable "root_volume_size" {
+  description = "Root volume size in GiB for the EC2 instances."
+  type        = number
+}
+
+variable "root_volume_type" {
+  description = "Root volume type for the EC2 instances."
+  type        = string
+}
+
+variable "data_volume_enabled" {
+  description = "Whether to attach an additional data volume to each EC2 instance."
+  type        = bool
+}
+
+variable "data_volume_size" {
+  description = "Size in GiB for the additional data volume."
+  type        = number
+}
+
+variable "data_volume_type" {
+  description = "Volume type for the additional data volume."
+  type        = string
+}
+
+variable "data_volume_device_name" {
+  description = "Device name to use for the additional data volume."
   type        = string
 }

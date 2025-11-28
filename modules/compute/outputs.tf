@@ -1,9 +1,9 @@
 output "instance_ids" {
-  description = "IDs of the created EC2 instances."
-  value       = aws_instance.web_server[*].id
+  description = "IDs of the EC2 instances"
+  value       = [for i in aws_instance.web_server : i.id]
 }
 
-output "instance_public_ips" {
-  description = "Public IPs of the created EC2 instances."
-  value       = aws_instance.web_server[*].public_ip
+output "public_ips" {
+  description = "Public IPs of the EC2 instances"
+  value       = [for i in aws_instance.web_server : i.public_ip]
 }

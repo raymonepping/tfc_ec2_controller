@@ -1,9 +1,24 @@
 output "instance_ids" {
-  description = "IDs of the created EC2 instances."
-  value       = aws_instance.web_server[*].id
+  description = "IDs of the EC2 instances"
+  value       = module.compute.instance_ids
 }
 
 output "instance_public_ips" {
-  description = "Public IPs of the created EC2 instances."
-  value       = aws_instance.web_server[*].public_ip
+  description = "Public IPs of the EC2 instances"
+  value       = module.compute.public_ips
+}
+
+output "alb_dns_name" {
+  description = "DNS name of the Application Load Balancer"
+  value       = module.alb.dns_name
+}
+
+output "security_group_id" {
+  description = "ID of the EC2 instances security group"
+  value       = module.network.security_group_id
+}
+
+output "subnet_id_effective" {
+  description = "Subnet ID used for the instances"
+  value       = local.effective_subnet_id
 }
