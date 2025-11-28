@@ -5,7 +5,7 @@ This project provisions a small, opinionated EC2 and ALB setup in an existing AW
 
 It is designed to be:
 
-- Simple enough for a workshop or demo
+- Simple enough for a workshop or demo..
 - Structured enough to extend into something more serious
 - Safe enough to show good habits (tags, lifecycle checks, Route53, separate storage)
 
