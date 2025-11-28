@@ -61,6 +61,7 @@ module "tags" {
 ##############################################################################
 module "storage" {
   source = "./modules/storage"
+  count  = var.enable_storage ? 1 : 0
 
   create_data_volumes = var.data_volume_enabled
 
@@ -137,6 +138,7 @@ module "compute" {
 ##############################################################################
 module "alb" {
   source = "./modules/alb"
+  count  = var.enable_alb ? 1 : 0
 
   vpc_id       = var.vpc_id
   subnet_ids   = var.subnet_ids
@@ -161,12 +163,12 @@ module "alb" {
 ##############################################################################
 module "dns" {
   source = "./modules/dns"
+  count  = var.enable_alb && var.enable_dns ? 1 : 0
 
   create_record = var.create_dns_record
   zone_id       = var.route53_zone_id
   record_name   = var.route53_record_name
 
-  alb_dns_name = module.alb.alb_dns_name
-  alb_zone_id  = module.alb.alb_zone_id
-
+  alb_dns_name = module.alb[0].alb_dns_name
+  alb_zone_id  = module.alb[0].alb_zone_id
 }
