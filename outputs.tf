@@ -37,3 +37,13 @@ output "alb_fqdn" {
   description = "Route53 DNS name pointing at the ALB (if created)"
   value       = module.dns.record_fqdn
 }
+
+output "data_volume_ids" {
+  description = "IDs of EBS data volumes created by the storage module"
+  value       = module.storage.volume_ids
+}
+
+output "data_volume_attachments" {
+  description = "IDs of the data volume attachments"
+  value       = module.storage.attachment_ids
+}

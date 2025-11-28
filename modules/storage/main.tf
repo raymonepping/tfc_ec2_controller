@@ -1,14 +1,9 @@
-locals {
-  create_count = var.create_data_volumes ? length(var.instance_ids) : 0
-}
-
-resource "aws_ebs_volume" "data" {
-  count = local.create_count
+resource "aws_ebs_volume" "this" {
+  count = var.create_data_volumes ? length(var.instance_ids) : 0
 
   availability_zone = var.availability_zones[count.index]
   size              = var.volume_size
   type              = var.volume_type
-  encrypted         = true
 
   tags = merge(
     var.tags,
@@ -19,11 +14,9 @@ resource "aws_ebs_volume" "data" {
 }
 
 resource "aws_volume_attachment" "this" {
-  count = local.create_count
+  count = var.create_data_volumes ? length(var.instance_ids) : 0
 
-  device_name  = var.device_name
-  volume_id    = aws_ebs_volume.data[count.index].id
-  instance_id  = var.instance_ids[count.index]
-  force_detach = false
-  skip_destroy = false
+  device_name = var.device_name
+  volume_id   = aws_ebs_volume.this[count.index].id
+  instance_id = var.instance_ids[count.index]
 }

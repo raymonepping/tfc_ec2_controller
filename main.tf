@@ -30,10 +30,9 @@ module "storage" {
 
   instance_ids       = module.compute.instance_ids
   availability_zones = module.compute.instance_azs
-
-  volume_size = var.data_volume_size
-  volume_type = var.data_volume_type
-  device_name = var.data_volume_device_name
+  volume_size        = var.data_volume_size
+  volume_type        = var.data_volume_type
+  device_name        = var.data_volume_device_name
 
   volume_name_prefix = "${var.instance_name_prefix}-data"
   tags               = module.tags.effective_tags

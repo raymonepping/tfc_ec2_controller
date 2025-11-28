@@ -5,12 +5,12 @@ variable "create_data_volumes" {
 }
 
 variable "instance_ids" {
-  description = "IDs of EC2 instances to attach volumes to"
+  description = "IDs of instances to attach the volumes to"
   type        = list(string)
 }
 
 variable "availability_zones" {
-  description = "Availability zones for each instance, same order as instance_ids"
+  description = "Availability zones for each instance"
   type        = list(string)
 }
 
@@ -20,22 +20,21 @@ variable "volume_size" {
 }
 
 variable "volume_type" {
-  description = "EBS volume type for data volumes"
+  description = "Volume type for the data volumes"
   type        = string
 }
 
 variable "device_name" {
-  description = "Device name to attach the volume as, for example /dev/xvdb"
+  description = "Device name to use when attaching the volume"
   type        = string
 }
 
 variable "volume_name_prefix" {
-  description = "Prefix for the Name tag of data volumes"
+  description = "Prefix for the Name tag of the volumes"
   type        = string
 }
 
 variable "tags" {
   description = "Base tags to apply to volumes"
   type        = map(string)
-  default     = {}
 }
