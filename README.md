@@ -5,9 +5,10 @@ This project provisions a small, opinionated EC2 and ALB setup in an existing AW
 
 It is designed to be:
 
-- Simple enough for a workshop or demo..
+- Simple enough for a workshop or demo
 - Structured enough to extend into something more serious
 - Safe enough to show good habits (tags, lifecycle checks, Route53, separate storage)
+- Flexible enough to switch major features on or off with a few flags
 
 ---
 
@@ -16,7 +17,8 @@ It is designed to be:
 Given an existing VPC, subnets and key pair, this stack will:
 
 - Create a security group for EC2 instances with SSH and HTTP access
-- Launch a configurable number of RHEL instances behind an Application Load Balancer
+- Launch a configurable number of RHEL instances
+- Optionally place an Application Load Balancer in front of them
 - Attach optional data volumes to each instance via a dedicated storage module
 - Tag everything with a consistent tag set (environment, cost center, application, owner)
 - Optionally create a Route53 DNS record that points at the ALB
@@ -25,23 +27,67 @@ By default it uses a RHEL 10 AMI from the Red Hat account. You can override the 
 
 ---
 
+## Feature flags
+
+Feature toggles live in `features.tf` so you can see all switches in one place.
+
+```hcl
+variable "enable_alb" {
+  description = "Enable ALB plus target group and listener in front of the EC2 instances"
+  type        = bool
+  default     = true
+}
+
+variable "enable_dns" {
+  description = "Enable Route53 DNS record that points at the ALB"
+  type        = bool
+  default     = true
+}
+
+variable "enable_storage" {
+  description = "Enable extra data EBS volumes via the storage module"
+  type        = bool
+  default     = true
+}
+````
+
+You can override these in `terraform.tfvars` or workspace variables, for example:
+
+```hcl
+# Minimal profile
+enable_alb     = true
+enable_dns     = false
+enable_storage = false
+```
+
+Internally:
+
+* `module.alb` uses `count = var.enable_alb ? 1 : 0`
+* `module.dns` uses `count = var.enable_alb && var.enable_dns ? 1 : 0`
+* `module.storage` uses `count = var.enable_storage ? 1 : 0`
+
+Outputs are guarded so they return empty strings or empty lists when a feature is turned off.
+
+---
+
 ## High level architecture
 
 **Inputs**
 
-- Existing VPC ID
-- Existing subnets in that VPC
-- Existing EC2 key pair
-- Optional Route53 hosted zone and record name
+* Existing VPC ID
+* Existing subnets in that VPC
+* Existing EC2 key pair
+* Optional Route53 hosted zone and record name
+* Optional feature flags for ALB, DNS and storage
 
-**Resources created**
+**Resources created when all features are enabled**
 
-- `aws_security_group` for instances plus separate ingress and egress rules
-- Two EC2 instances of type `t3.micro` by default
-- One Application Load Balancer with a single HTTP listener and target group
-- One security group for the ALB
-- Optional EBS data volumes attached to each instance
-- Optional Route53 alias record that points to the ALB
+* `aws_security_group` for instances plus separate ingress and egress rules
+* Two EC2 instances of type `t3.micro` by default
+* One Application Load Balancer with a single HTTP listener and target group
+* One security group for the ALB
+* Optional EBS data volumes attached to each instance
+* Optional Route53 alias record that points to the ALB
 
 ---
 
@@ -51,6 +97,7 @@ By default it uses a RHEL 10 AMI from the Red Hat account. You can override the 
 ./
 ├── backend.tf          # Local state backend (terraform.tfstate in this folder)
 ├── data.tf             # Data sources (RHEL 10 AMI lookup)
+├── features.tf         # Feature flags (enable_alb, enable_dns, enable_storage)
 ├── main.tf             # Root composition of all modules
 ├── outputs.tf          # Root outputs
 ├── providers.tf        # Provider definition (AWS, version constraints)
@@ -80,7 +127,7 @@ By default it uses a RHEL 10 AMI from the Red Hat account. You can override the 
     └── tags/
         ├── main.tf
         └── outputs.tf
-````
+```
 
 ---
 
@@ -134,7 +181,7 @@ Key features:
 
   ```hcl
   lifecycle {
-    # Hard requirement: we only accept 64-bit AMIs
+    # Hard requirement: we only accept 64 bit AMIs
     precondition {
       condition     = var.architecture == "x86_64"
       error_message = "The selected AMI must be x86_64. Got: ${var.architecture}"
@@ -174,6 +221,8 @@ Outputs:
 
 Responsible for the Application Load Balancer in front of the instances.
 
+This module is created only when `enable_alb` is true.
+
 Creates:
 
 * `aws_lb.this` (internet facing, HTTP)
@@ -199,11 +248,15 @@ Outputs:
 * `alb_dns_name`
 * `alb_zone_id`
 
+When `enable_alb` is false, the module is not instantiated and ALB related outputs return empty values.
+
 ---
 
 ### `modules/dns`
 
 Optional Route53 integration for a friendly DNS name.
+
+Created only when both `enable_alb` and `enable_dns` are true.
 
 Creates:
 
@@ -221,7 +274,7 @@ Output:
 
 * `record_fqdn` (used in the root output `alb_fqdn`)
 
-If `create_record` is `false`, the module does not create any records and returns an empty string.
+If `create_record` is false or `enable_dns` is false, the module does not create any records and returns an empty string.
 
 ---
 
@@ -229,7 +282,9 @@ If `create_record` is `false`, the module does not create any records and return
 
 Decouples data volumes from instance creation.
 
-Creates for each instance (when enabled):
+This module is created only when `enable_storage` is true.
+
+Creates for each instance (when `create_data_volumes` is true):
 
 * `aws_ebs_volume.this[count]` in the same AZ as the instance
 * `aws_volume_attachment.this[count]` attached at the configured device name
@@ -256,6 +311,8 @@ The root module exposes these as:
 * `data_volume_ids`
 * `data_volume_attachments`
 * `data_volume_names`
+
+When `enable_storage` is false or `data_volume_enabled` is false, the outputs expose empty lists.
 
 ---
 
@@ -365,10 +422,17 @@ data_volume_type        = "gp3"
 data_volume_device_name = "/dev/xvdb"
 
 # Route53 DNS integration
-create_dns_record = true
-route53_zone_id   = "Z08325331FB981V6E7LSO"
+create_dns_record   = true
+route53_zone_id     = "Z08325331FB981V6E7LSO"
 route53_record_name = "ec2-demo.raymon-epping.sbx.hashidemos.io"
+
+# Optional feature overrides (defaults are true)
+# enable_alb     = true
+# enable_dns     = true
+# enable_storage = true
 ```
+
+If you leave the feature flags commented out, all features are enabled.
 
 ---
 
@@ -378,12 +442,15 @@ After `terraform apply`, the root module exposes:
 
 * `alb_dns_name`
   Raw ALB DNS name from AWS, for example `ec2-demo-alb-xxxx.eu-north-1.elb.amazonaws.com`.
+  Empty string if `enable_alb` is false.
 
 * `alb_http_url`
   Convenience URL `http://<alb_dns_name>`.
+  Empty string if `enable_alb` is false.
 
 * `alb_fqdn`
-  Friendly DNS record from Route53, for example `ec2-demo.raymon-epping.sbx.hashidemos.io` (if DNS is enabled).
+  Friendly DNS record from Route53, for example `ec2-demo.raymon-epping.sbx.hashidemos.io`.
+  Empty string if the DNS feature or record creation is disabled.
 
 * `instance_ids`
   List of EC2 instance IDs.
@@ -401,13 +468,13 @@ After `terraform apply`, the root module exposes:
   Subnet that was chosen for instances (explicit value or first subnet from `subnet_ids`).
 
 * `data_volume_ids`
-  EBS volume IDs created by the storage module.
+  EBS volume IDs created by the storage module, or empty list if storage is disabled.
 
 * `data_volume_attachments`
-  Volume attachment IDs.
+  Volume attachment IDs, or empty list if storage is disabled.
 
 * `data_volume_names`
-  Effective Name tags for the data volumes.
+  Effective Name tags for the data volumes, or empty list if storage is disabled.
 
 ---
 
@@ -439,7 +506,7 @@ You also need:
 
    * Set `vpc_id`, `subnet_ids`, and `ssh_key_name` for your environment
    * Optionally change `instance_type`, `instance_count`, `data_volume_*`, and tag values
-   * Enable or disable DNS and storage features as needed
+   * Optionally toggle `enable_alb`, `enable_dns`, `enable_storage`
 
 3. **Initialize Terraform**
 
@@ -465,6 +532,7 @@ You also need:
 
    * `alb_http_url` for direct ALB access
    * `alb_fqdn` for the Route53 DNS endpoint if enabled
+   * `instance_public_ips` for direct instance access
 
 ---
 
@@ -476,7 +544,7 @@ To remove all resources created by this configuration:
 terraform destroy
 ```
 
-Make sure there are no extra resources attached to the instances or ALB before you destroy, to avoid dependency surprises.
+Make sure there are no extra resources attached to the instances or ALB before you destroy to avoid dependency surprises.
 
 ---
 
@@ -486,11 +554,16 @@ This layout is ready for further experiments, for example:
 
 * Adding user data and Ansible hooks for automatic configuration
 * Introducing multiple target groups and ALB listener rules per path
-* Wiring in additional modules, such as:
+* Wiring in additional modules such as:
 
   * IAM roles and instance profiles
   * CloudWatch metrics and alarms
   * SSM Session Manager for SSH free access
+* Adding more feature flags for future modules, using the same pattern as:
+
+  * `enable_alb`
+  * `enable_dns`
+  * `enable_storage`
 
 For now, it stays focused on a clean, modular EC2 and ALB shape that showcases:
 
@@ -499,5 +572,6 @@ For now, it stays focused on a clean, modular EC2 and ALB shape that showcases:
 * Storage separation
 * DNS integration
 * Lifecycle guardrails
+* Central feature switches for fast experimentation
 
 ```
