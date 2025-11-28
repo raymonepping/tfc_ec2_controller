@@ -1,12 +1,14 @@
 ##############################################################################
-# Security group (rules-only pattern)
+# Security group for EC2 instances (rules-only pattern)
 ##############################################################################
 
 resource "aws_security_group" "this" {
   name                   = var.security_group_name
   description            = "Security group for EC2 instances"
-  vpc_id                 = data.aws_vpc.selected.id
+  vpc_id                 = var.vpc_id
   revoke_rules_on_delete = true
+
+  # No inline ingress/egress rules - all managed via separate VPC security group rule resources
 
   tags = merge(
     var.tags,
@@ -16,35 +18,33 @@ resource "aws_security_group" "this" {
   )
 }
 
-# SSH ingress from ssh_ingress_cidrs
-resource "aws_vpc_security_group_ingress_rule" "ssh_ingress" {
-  for_each = var.ssh_ingress_cidrs
-
+# SSH ingress
+resource "aws_vpc_security_group_ingress_rule" "ssh_ingress_aap_aws_range" {
   security_group_id = aws_security_group.this.id
-  description       = "SSH Access"
-  from_port         = 22
-  to_port           = 22
-  ip_protocol       = "tcp"
-  cidr_ipv4         = each.value
+
+  description = "SSH Access - AAP AWS IP Range"
+  from_port   = 22
+  to_port     = 22
+  ip_protocol = "tcp"
+  cidr_ipv4   = "0.0.0.0/0"
 
   tags = {
-    Name = "SSH Access"
+    Name = "SSH Access - AAP AWS Range"
   }
 }
 
-# HTTP ingress from http_ingress_cidrs
+# HTTP ingress
 resource "aws_vpc_security_group_ingress_rule" "http_ingress" {
-  for_each = var.http_ingress_cidrs
-
   security_group_id = aws_security_group.this.id
-  description       = "HTTP Access"
-  from_port         = 80
-  to_port           = 80
-  ip_protocol       = "tcp"
-  cidr_ipv4         = each.value
+
+  description = "HTTP Access"
+  from_port   = 80
+  to_port     = 80
+  ip_protocol = "tcp"
+  cidr_ipv4   = "0.0.0.0/0"
 
   tags = {
-    Name = "HTTP Access"
+    Name = "HTTP Access - 0.0.0.0/0"
   }
 }
 
