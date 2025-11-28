@@ -3,6 +3,16 @@
 ##############################################################################
 
 locals {
+  # If the caller supplied an AMI, use it, otherwise use the RHEL 10 AMI
+  effective_ami_id = (
+    var.ami_id != null && var.ami_id != ""
+  ) ? var.ami_id : data.aws_ami.rhel_10.id
+
+  # Architecture that we pass into the compute module for lifecycle checks
+  effective_architecture = data.aws_ami.rhel_10.architecture
+}
+
+locals {
   effective_subnet_id = (
     var.instance_subnet_id != null && var.instance_subnet_id != ""
   ) ? var.instance_subnet_id : var.subnet_ids[0]
@@ -24,13 +34,11 @@ module "compute" {
   instance_type        = var.instance_type
   instance_count       = var.instance_count
   instance_name_prefix = var.instance_name_prefix
-
-  subnet_id         = local.effective_subnet_id
-  security_group_id = module.network.security_group_id
-
-  ssh_key_name = var.ssh_key_name
-  ami_id       = var.ami_id
-  tags         = var.tags
+  subnet_id            = local.effective_subnet_id
+  security_group_id    = module.network.security_group_id
+  ssh_key_name         = var.ssh_key_name
+  ami_id               = local.effective_ami_id
+  tags                 = var.tags
 
   # Storage configuration
   root_volume_size        = var.root_volume_size
@@ -39,6 +47,9 @@ module "compute" {
   data_volume_size        = var.data_volume_size
   data_volume_type        = var.data_volume_type
   data_volume_device_name = var.data_volume_device_name
+
+  # Lifecycle guardrail input
+  architecture = local.effective_architecture
 }
 
 module "alb" {

@@ -41,32 +41,39 @@ variable "tags" {
 variable "root_volume_size" {
   description = "Root volume size in GiB for the EC2 instances."
   type        = number
+  default     = 10
 }
 
 variable "root_volume_type" {
   description = "Root volume type for the EC2 instances."
   type        = string
+  default     = "gp3"
 }
 
 variable "data_volume_enabled" {
   description = "Whether to attach an additional data volume to each EC2 instance."
   type        = bool
+  default     = false
 }
 
 variable "data_volume_size" {
   description = "Size in GiB for the additional data volume."
   type        = number
+  default     = 20
 }
 
 variable "data_volume_type" {
   description = "Volume type for the additional data volume."
   type        = string
+  default     = "gp3"
 }
 
 variable "data_volume_device_name" {
   description = "Device name to use for the additional data volume."
   type        = string
+  default     = "/dev/sdf"
 }
+
 
 variable "architecture" {
   description = "Expected AMI architecture, used for lifecycle precondition checks"

@@ -65,10 +65,13 @@ variable "http_ingress_cidr" {
   default     = ["0.0.0.0/0"]
 }
 
+
 variable "ami_id" {
-  description = "AMI ID for the EC2 instances (for example RHEL 10 free tier from ami_lookup.sh)"
+  description = "Optional override for the AMI ID. If null, use the default RHEL 10 AMI for the region."
   type        = string
+  default     = null
 }
+
 
 variable "tags" {
   description = "Tags to apply to all resources"
