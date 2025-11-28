@@ -33,3 +33,7 @@ output "instance_azs" {
   value       = module.compute.instance_azs
 }
 
+output "alb_fqdn" {
+  description = "Route53 DNS name pointing at the ALB (if created)"
+  value       = module.dns.record_fqdn
+}
