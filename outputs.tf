@@ -9,8 +9,13 @@ output "instance_public_ips" {
 }
 
 output "alb_dns_name" {
-  description = "DNS name of the Application Load Balancer"
+  description = "DNS name of the Application Load Balancer."
   value       = module.alb.dns_name
+}
+
+output "alb_http_url" {
+  description = "HTTP URL of the Application Load Balancer."
+  value       = "http://${module.alb.dns_name}"
 }
 
 output "security_group_id" {
