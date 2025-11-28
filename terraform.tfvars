@@ -9,7 +9,7 @@ subnet_ids = [
 ]
 
 # Instance details
-instance_subnet_id = "subnet-0023ccee8b48c4720"
+instance_subnet_id   = "subnet-0023ccee8b48c4720"
 instance_type        = "t3.micro"
 instance_count       = 2
 instance_name_prefix = "rhel-demo"
@@ -19,7 +19,8 @@ ssh_key_name = "my-keypair"
 
 # RHEL 10 free tier AMI
 ami_id = "ami-08526b399bb6eb2c7"
-architecture = "arm64"
+
+architecture = "x86_64"
 
 # Storage configuration
 data_volume_enabled     = true

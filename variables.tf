@@ -72,6 +72,11 @@ variable "ami_id" {
   default     = null
 }
 
+variable "architecture" {
+  description = "Expected AMI architecture, passed into the compute module for lifecycle checks"
+  type        = string
+  default     = "x86_64"
+}
 
 variable "tags" {
   description = "Tags to apply to all resources"

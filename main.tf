@@ -3,13 +3,9 @@
 ##############################################################################
 
 locals {
-  # If the caller supplied an AMI, use it, otherwise use the RHEL 10 AMI
   effective_ami_id = (
     var.ami_id != null && var.ami_id != ""
   ) ? var.ami_id : data.aws_ami.rhel_10.id
-
-  # Architecture that we pass into the compute module for lifecycle checks
-  effective_architecture = data.aws_ami.rhel_10.architecture
 }
 
 locals {
@@ -49,7 +45,7 @@ module "compute" {
   data_volume_device_name = var.data_volume_device_name
 
   # Lifecycle guardrail input
-  architecture = local.effective_architecture
+  architecture = var.architecture
 }
 
 module "alb" {
