@@ -40,7 +40,7 @@ variable "ami_id" {
 variable "ssh_key_name" {
   description = "Name of the SSH key pair to use for the instances."
   type        = string
-  default     = "techxchangenl"
+  default     = "my-keypair"
 }
 
 variable "tags" {
