@@ -1,10 +1,12 @@
 ##############################################################################
 # Variables File
-##############################################################################
+#
+# Here is where we store the default values for all the variables used in our
+# Terraform code. If you create a variable with no default, the user will be
+# prompted to enter it (or define it via config file or command line flags.)
 
 variable "region" {
   description = "The region where the resources are created."
-  type        = string
   default     = "eu-north-1"
 }
 
@@ -15,20 +17,17 @@ variable "instance_name_prefix" {
 }
 
 variable "address_space" {
-  description = "Unused in this version. Kept for compatibility."
-  type        = string
+  description = "The address space that is used by the virtual network. You can supply more than one address space. Changing this forces a new resource to be created."
   default     = "10.0.0.0/16"
 }
 
 variable "subnet_prefix" {
-  description = "Unused in this version. Kept for compatibility."
-  type        = string
+  description = "The address prefix to use for the subnet."
   default     = "10.0.10.0/24"
 }
 
 variable "instance_type" {
   description = "Specifies the AWS instance type."
-  type        = string
   default     = "t3.micro"
 }
 
@@ -39,18 +38,16 @@ variable "security_group_name" {
 }
 
 variable "vpc_id" {
-  description = "VPC ID to create resources in. Must be provided, as DescribeVpcs is not available."
+  description = "VPC ID to create resources in (if not provided, the default VPC will be used)"
   type        = string
+  default     = null
 }
+
 
 variable "subnet_id" {
-  description = "Subnet ID to launch the instances in. Must be provided, as subnet discovery is not available."
+  description = "Subnet ID to launch the instances in (if not provided, a subnet from the default VPC will be used)"
   type        = string
-}
-
-variable "ami_id" {
-  description = "AMI ID to use for the EC2 instances (for example from ami_lookup.sh)."
-  type        = string
+  default     = null
 }
 
 variable "ssh_key_name" {
