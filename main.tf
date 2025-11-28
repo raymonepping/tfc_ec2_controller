@@ -1,39 +1,20 @@
-module "network" {
-  source = "./modules/network"
+resource "aws_instance" "web_server" {
+  count                       = var.instance_count
+  ami                         = var.ami_id
+  instance_type               = var.instance_type
+  subnet_id                   = var.subnet_id
+  vpc_security_group_ids      = var.security_group_ids
+  key_name                    = var.ssh_key_name
+  associate_public_ip_address = true
 
-  vpc_id              = var.vpc_id
-  subnet_ids          = var.subnet_ids
-  subnet_id           = var.subnet_id
-  security_group_name = var.security_group_name
-  ssh_ingress_cidr    = var.ssh_ingress_cidr
-  http_ingress_cidr   = var.http_ingress_cidr
-  tags                = var.tags
-}
+  root_block_device {
+    encrypted = true
+  }
 
-module "compute" {
-  source = "./modules/compute"
-
-  instance_type        = var.instance_type
-  instance_count       = var.instance_count
-  instance_name_prefix = var.instance_name_prefix
-  ssh_key_name         = var.ssh_key_name
-
-  subnet_id         = module.network.subnet_id_effective
-  security_group_id = module.network.security_group_id
-
-  ami_id = var.ami_id
-
-  tags = var.tags
-}
-
-module "alb" {
-  source = "./modules/alb"
-
-  vpc_id        = module.network.vpc_id
-  subnet_ids    = module.network.subnet_ids
-  instance_ids  = module.compute.instance_ids
-  alb_name      = "ec2-demo-alb"
-  listener_port = 80
-  target_port   = 80
-  tags          = var.tags
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.instance_name_prefix}-web-server-${count.index + 1}"
+    }
+  )
 }
