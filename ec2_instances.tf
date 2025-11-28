@@ -20,13 +20,10 @@ resource "aws_instance" "web_server" {
       Name = "${var.instance_name_prefix}-web-server-${count.index + 1}"
     }
   )
-  lifecycle {
-    # This action triggers syntax new in terraform
-    # It configures terraform to run the listed actions based
-    # on the named lifecycle events: "After creating this resource, run the action"
-    action_trigger {
-      events  = [after_create]
-      actions = [action.aap_eda_eventstream_post.create]
-    }
-  }
+  #  lifecycle {
+  #   action_trigger {
+  #      events  = [after_create]
+  #     actions = [action.aap_eda_eventstream_post.create]
+  #    }
+  #  }
 }
