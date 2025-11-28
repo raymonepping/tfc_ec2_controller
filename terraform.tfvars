@@ -18,7 +18,7 @@ instance_name_prefix = "rhel-demo"
 
 ssh_key_name = "my-keypair"
 
-# RHEL 10 free tier AMI you already validated
+# RHEL 10 free tier AMI
 ami_id = "ami-08526b399bb6eb2c7"
 
 data_volume_enabled     = true
