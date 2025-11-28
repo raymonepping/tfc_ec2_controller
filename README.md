@@ -62,9 +62,9 @@ enable_storage = false
 
 Internally:
 
-* `module.alb` uses `count = var.enable_alb ? 1 : 0`
-* `module.dns` uses `count = var.enable_alb && var.enable_dns ? 1 : 0`
-* `module.storage` uses `count = var.enable_storage ? 1 : 0`
+* `module.alb`      uses `count = var.enable_alb ? 1 : 0`
+* `module.dns`      uses `count = var.enable_alb && var.enable_dns ? 1 : 0`
+* `module.storage`  uses `count = var.enable_storage ? 1 : 0`
 
 Outputs are guarded so they return empty strings or empty lists when a feature is turned off.
 
@@ -139,10 +139,10 @@ Responsible for network level access for the EC2 instances.
 
 Creates:
 
-* `aws_security_group.this` for the instances
-* `aws_vpc_security_group_ingress_rule.ssh_ingress` for SSH
-* `aws_vpc_security_group_ingress_rule.http_ingress` for HTTP
-* `aws_vpc_security_group_egress_rule.all_outbound` for outbound traffic
+* `aws_security_group.this`                             for the instances
+* `aws_vpc_security_group_ingress_rule.ssh_ingress`     for SSH
+* `aws_vpc_security_group_ingress_rule.http_ingress`    for HTTP
+* `aws_vpc_security_group_egress_rule.all_outbound`     for outbound traffic
 
 Inputs (root wired):
 
@@ -178,6 +178,8 @@ Key features:
 
 * `count` driven scaling via `var.instance_count`
 * Lifecycle guardrails:
+
+# New-style lifecycle usage that is actually safe and useful
 
   ```hcl
   lifecycle {
