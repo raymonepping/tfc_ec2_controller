@@ -1,3 +1,9 @@
+# Tagging metadata
+environment = "dev"
+cost_center = "personal"
+application = "ec2-alb-demo"
+owner       = "raymon"
+
 region = "eu-north-1"
 
 vpc_id = "vpc-02ffa563ad97b1f64"
@@ -18,8 +24,7 @@ instance_name_prefix = "rhel-demo"
 ssh_key_name = "my-keypair"
 
 # RHEL 10 free tier AMI
-ami_id = "ami-08526b399bb6eb2c7"
-
+ami_id       = "ami-08526b399bb6eb2c7"
 architecture = "x86_64"
 
 # Storage configuration
