@@ -34,5 +34,5 @@ data_volume_type        = "gp3"
 data_volume_device_name = "/dev/xvdb"
 
 create_dns_record   = true
-route53_zone_id     = "Z123EXAMPLEZONEID"
-route53_record_name = "ec2-demo.example.com"
+route53_zone_id     = "Z08325331FB981V6E7LSO"
+route53_record_name = "ec2-demo.raymon-epping.sbx.hashidemos.io"
