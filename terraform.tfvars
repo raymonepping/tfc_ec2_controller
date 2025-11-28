@@ -8,19 +8,20 @@ subnet_ids = [
   "subnet-0e958bfc095b39b9e",
 ]
 
-# If you want instances in a specific subnet, set this.
-# Otherwise, first subnet in subnet_ids is used.
+# Instance details
 instance_subnet_id = "subnet-0023ccee8b48c4720"
-
 instance_type        = "t3.micro"
 instance_count       = 2
 instance_name_prefix = "rhel-demo"
 
+# Existing EC2 key pair name 
 ssh_key_name = "my-keypair"
 
 # RHEL 10 free tier AMI
 ami_id = "ami-08526b399bb6eb2c7"
+architecture = "arm64"
 
+# Storage configuration
 data_volume_enabled     = true
 data_volume_size        = 50
 data_volume_type        = "gp3"
