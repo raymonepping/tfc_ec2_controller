@@ -1,11 +1,18 @@
+##############################################################################
 # Tagging metadata
+# These flow into the tags module and end up on every resource
+##############################################################################
 environment = "dev"
 cost_center = "personal"
 application = "ec2-alb-demo"
 owner       = "raymon"
 
+##############################################################################
+# AWS region and networking
+##############################################################################
 region = "eu-north-1"
 
+# Existing VPC and subnets to place EC2 + ALB in
 vpc_id = "vpc-02ffa563ad97b1f64"
 
 subnet_ids = [
@@ -14,25 +21,48 @@ subnet_ids = [
   "subnet-0e958bfc095b39b9e",
 ]
 
-# Instance details
-instance_subnet_id   = "subnet-0023ccee8b48c4720"
+##############################################################################
+# EC2 instance settings
+##############################################################################
+
+# Subnet used for the EC2 instances.
+# If you leave instance_subnet_id empty, the module falls back to subnet_ids[0].
+instance_subnet_id = "subnet-0023ccee8b48c4720"
+
 instance_type        = "t3.micro"
 instance_count       = 2
 instance_name_prefix = "rhel-demo"
 
-# Existing EC2 key pair name 
+# Existing EC2 key pair name for SSH access
 ssh_key_name = "my-keypair"
 
-# RHEL 10 free tier AMI
-ami_id       = "ami-08526b399bb6eb2c7"
+##############################################################################
+# AMI and lifecycle guardrail
+##############################################################################
+
+# Explicit RHEL 10 AMI. If you set this to null, the data source will
+# automatically pick the latest RHEL 10 in the region.
+ami_id = "ami-08526b399bb6eb2c7"
+
+# This is validated by the compute module lifecycle precondition.
+# Change this to a wrong architecture to see the guardrail in action.
 architecture = "x86_64"
 
-# Storage configuration
+##############################################################################
+# Storage configuration (additional data volume per instance)
+##############################################################################
+
 data_volume_enabled     = true
 data_volume_size        = 50
 data_volume_type        = "gp3"
 data_volume_device_name = "/dev/xvdb"
 
+##############################################################################
+# DNS integration (Route53 alias record for the ALB)
+##############################################################################
+
+# When true, the dns module creates an A record in this hosted zone
+# that aliases to the ALB DNS name.
 create_dns_record = true
 
 route53_zone_id     = "Z08325331FB981V6E7LSO"

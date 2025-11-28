@@ -1,20 +1,20 @@
 ##############################################################################
-# Root variables
+# Root variables: region and network
 ##############################################################################
 
 variable "region" {
-  description = "AWS region to deploy into"
+  description = "AWS region to deploy into."
   type        = string
   default     = "eu-north-1"
 }
 
 variable "vpc_id" {
-  description = "Existing VPC ID where EC2 and ALB will live"
+  description = "Existing VPC ID where EC2 and ALB will live."
   type        = string
 }
 
 variable "subnet_ids" {
-  description = "List of subnet IDs in the VPC, used by ALB and EC2"
+  description = "List of subnet IDs in the VPC, used by ALB and EC2."
   type        = list(string)
 }
 
@@ -24,47 +24,54 @@ variable "instance_subnet_id" {
   default     = null
 }
 
+##############################################################################
+# Compute instance configuration
+##############################################################################
+
 variable "instance_type" {
-  description = "EC2 instance type"
+  description = "EC2 instance type."
   type        = string
   default     = "t3.micro"
 }
 
 variable "instance_count" {
-  description = "Number of EC2 instances behind the ALB"
+  description = "Number of EC2 instances behind the ALB."
   type        = number
   default     = 2
 }
 
 variable "instance_name_prefix" {
-  description = "Prefix for the Name tag of EC2 instances"
+  description = "Prefix for the Name tag of EC2 instances."
   type        = string
   default     = "rhel-demo"
 }
 
 variable "ssh_key_name" {
-  description = "Existing EC2 key pair name"
+  description = "Existing EC2 key pair name used for SSH access."
   type        = string
 }
 
 variable "security_group_name" {
-  description = "Name for the EC2 instance security group"
+  description = "Name for the EC2 instance security group."
   type        = string
   default     = "ec2-instances-sg"
 }
 
 variable "ssh_ingress_cidr" {
-  description = "CIDR ranges allowed to SSH to the instances"
+  description = "CIDR ranges allowed to SSH to the instances."
   type        = list(string)
   default     = ["0.0.0.0/0"]
 }
 
 variable "http_ingress_cidr" {
-  description = "CIDR ranges allowed to HTTP to the instances"
+  description = "CIDR ranges allowed to HTTP to the instances."
   type        = list(string)
   default     = ["0.0.0.0/0"]
 }
 
+##############################################################################
+# AMI selection and lifecycle guardrail
+##############################################################################
 
 variable "ami_id" {
   description = "Optional override for the AMI ID. If null, use the default RHEL 10 AMI for the region."
@@ -73,13 +80,17 @@ variable "ami_id" {
 }
 
 variable "architecture" {
-  description = "Expected AMI architecture, passed into the compute module for lifecycle checks"
+  description = "Expected AMI architecture, passed into the compute module for lifecycle precondition checks."
   type        = string
   default     = "x86_64"
 }
 
+##############################################################################
+# Legacy / base tags map (kept for extension if needed)
+##############################################################################
+
 variable "tags" {
-  description = "Tags to apply to all resources"
+  description = "Base tags map. Currently not wired into the tags module, but kept for future extension."
   type        = map(string)
   default = {
     Terraform  = "true"
@@ -124,52 +135,59 @@ variable "data_volume_type" {
 }
 
 variable "data_volume_device_name" {
-  description = "Device name to use for the additional data volume."
+  description = "Device name to use for the additional data volume (for example /dev/xvdb)."
   type        = string
   default     = "/dev/xvdb"
 }
 
-# Tags for resources
+##############################################################################
+# Tagging metadata for the tags module
+##############################################################################
+
 variable "environment" {
-  description = "Environment name for tagging"
+  description = "Environment name for tagging (for example dev, stage, prod)."
   type        = string
 }
 
 variable "cost_center" {
-  description = "Cost center for tagging"
+  description = "Cost center for tagging."
   type        = string
 }
 
 variable "application" {
-  description = "Application name for tagging"
+  description = "Application name for tagging."
   type        = string
 }
 
 variable "owner" {
-  description = "Owner or team for tagging"
+  description = "Owner or team for tagging."
   type        = string
 }
 
 variable "extra_tags" {
-  description = "Optional extra tags to merge into the base tag set"
+  description = "Optional extra tags to merge into the base tag set."
   type        = map(string)
   default     = {}
 }
 
+##############################################################################
+# DNS integration (Route 53)
+##############################################################################
+
 variable "create_dns_record" {
-  description = "Whether to create a Route53 record for the ALB"
+  description = "Whether to create a Route53 record for the ALB."
   type        = bool
   default     = false
 }
 
 variable "route53_zone_id" {
-  description = "Route53 hosted zone id where the record will be created"
+  description = "Route53 hosted zone id where the record will be created."
   type        = string
   default     = ""
 }
 
 variable "route53_record_name" {
-  description = "DNS record name for the ALB, for example ec2-demo.example.com"
+  description = "DNS record name for the ALB, for example ec2-demo.example.com."
   type        = string
   default     = ""
 }

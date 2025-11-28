@@ -1,7 +1,21 @@
 ##############################################################################
-# Root composition: network + compute + ALB
+# Root composition module
+#
+# This file wires together the building blocks for the demo:
+#   - tags       – central tagging logic
+#   - network    – security group and ingress rules
+#   - compute    – EC2 instances behind the ALB
+#   - storage    – optional data EBS volumes for each instance
+#   - alb        – Application Load Balancer that fronts the instances
+#   - dns        – optional Route53 record pointing at the ALB
+#
+# All provider configuration lives in providers.tf
+# Data sources such as the default RHEL 10 AMI live in data.tf
 ##############################################################################
 
+##############################################################################
+# Locals – helper values for AMI and subnet selection
+##############################################################################
 locals {
   effective_ami_id = (
     var.ami_id != null && var.ami_id != ""
@@ -14,6 +28,15 @@ locals {
   ) ? var.instance_subnet_id : var.subnet_ids[0]
 }
 
+##############################################################################
+# Tag module – central place for tag strategy
+#
+# The tags module takes high level inputs
+#   environment, cost_center, application, owner, extra_tags
+# and returns a single merged map in effective_tags.
+#
+# All other modules use these tags so that the tagging model stays consistent.
+##############################################################################
 module "tags" {
   source      = "./modules/tags"
   environment = var.environment
@@ -23,6 +46,19 @@ module "tags" {
   extra_tags  = var.extra_tags
 }
 
+##############################################################################
+# Storage module – optional per instance data volumes
+#
+# This module:
+#   - Creates one EBS volume per EC2 instance when create_data_volumes is true
+#   - Attaches each volume to the matching instance id
+#   - Uses the instance AZs from the compute module so volumes are AZ correct
+#
+# Note:
+#   Although the storage module is declared before the compute module,
+#   Terraform uses references (module.compute.*) to build the dependency graph.
+#   It will always create the EC2 instances before attaching volumes.
+##############################################################################
 module "storage" {
   source = "./modules/storage"
 
@@ -38,6 +74,14 @@ module "storage" {
   tags               = module.tags.effective_tags
 }
 
+##############################################################################
+# Network module – security group and ingress rules
+#
+# This module:
+#   - Reuses the existing VPC
+#   - Creates a security group for the EC2 instances
+#   - Manages SSH and HTTP rules using the rules only pattern
+##############################################################################
 module "network" {
   source = "./modules/network"
 
@@ -48,6 +92,20 @@ module "network" {
   tags                = module.tags.effective_tags
 }
 
+##############################################################################
+# Compute module – EC2 instances behind the ALB
+#
+# This module:
+#   - Launches instance_count EC2 instances in the effective subnet
+#   - Attaches the security group from the network module
+#   - Uses the effective_ami_id local for AMI selection
+#   - Configures root volume size and type
+#   - Enforces a lifecycle precondition on architecture
+#   - Enforces a lifecycle postcondition that each instance has a public IP
+#
+# Extra data volumes are handled by the storage module so that the instance
+# definition stays clean and reusable.
+##############################################################################
 module "compute" {
   source = "./modules/compute"
 
@@ -68,6 +126,15 @@ module "compute" {
   architecture = var.architecture
 }
 
+##############################################################################
+# ALB module – Application Load Balancer in front of the instances
+#
+# This module:
+#   - Creates an internet facing ALB in the given VPC and subnets
+#   - Creates a target group and attaches the EC2 instances
+#   - Creates an HTTP listener on port 80
+#   - Reuses the same tag strategy via module.tags.effective_tags
+##############################################################################
 module "alb" {
   source = "./modules/alb"
 
@@ -81,6 +148,17 @@ module "alb" {
   tags          = module.tags.effective_tags
 }
 
+##############################################################################
+# DNS module – optional Route53 record for the ALB
+#
+# This module:
+#   - Creates an alias A record in a given hosted zone
+#   - Points the record at the ALB DNS name and zone id
+#   - Is controlled by create_dns_record so it is safe in labs
+#
+# Example output:
+#   ec2-demo.raymon-epping.sbx.hashidemos.io -> ALB
+##############################################################################
 module "dns" {
   source = "./modules/dns"
 
