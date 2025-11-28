@@ -1,22 +1,19 @@
 variable "region" {
-  description = "AWS region."
+  description = "AWS region"
   type        = string
   default     = "eu-north-1"
 }
 
-variable "ami_id" {
-  description = "AMI ID to use for the EC2 instances (from ami_lookup.sh)."
+variable "vpc_id" {
+  description = "Optional VPC ID. If null, the default VPC in the region is used."
   type        = string
+  default     = null
 }
 
 variable "subnet_id" {
-  description = "Subnet ID where the instances will be launched."
+  description = "Optional subnet ID. If null, a default subnet of the selected VPC is used."
   type        = string
-}
-
-variable "security_group_ids" {
-  description = "List of existing security group IDs to attach to the instances."
-  type        = list(string)
+  default     = null
 }
 
 variable "instance_type" {
@@ -32,19 +29,43 @@ variable "instance_count" {
 }
 
 variable "instance_name_prefix" {
-  description = "Prefix for Name tag."
+  description = "Prefix for the Name tag of EC2 instances."
   type        = string
   default     = "test"
 }
 
+variable "security_group_name" {
+  description = "Name for the security group."
+  type        = string
+  default     = "ec2-instances-sg"
+}
+
 variable "ssh_key_name" {
-  description = "SSH key pair name."
+  description = "Name of the SSH key pair to use for the instances."
   type        = string
   default     = "techxchangenl"
 }
 
+variable "ssh_ingress_cidrs" {
+  description = "CIDR blocks allowed SSH access (port 22)."
+  type        = set(string)
+  default     = ["0.0.0.0/0"]
+}
+
+variable "http_ingress_cidrs" {
+  description = "CIDR blocks allowed HTTP access (port 80)."
+  type        = set(string)
+  default     = ["0.0.0.0/0"]
+}
+
+variable "rhel_ami_name_prefix" {
+  description = "Name filter for the RHEL 10 AMI."
+  type        = string
+  default     = "RHEL-10*"
+}
+
 variable "tags" {
-  description = "Base tags to apply."
+  description = "Base tags to apply to all resources."
   type        = map(string)
   default = {
     Terraform  = "true"
