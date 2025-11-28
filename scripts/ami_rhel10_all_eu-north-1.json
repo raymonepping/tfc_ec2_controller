@@ -1,0 +1,80 @@
+[
+  {
+    "ImageId": "ami-09627188d1e477c9e",
+    "Name": "RHEL-10.0.0_HVM-20250730-x86_64-0-Hourly2-GP3",
+    "PlatformDetails": "Red Hat Enterprise Linux",
+    "Description": "Provided by Red Hat, Inc.",
+    "Hypervisor": "xen",
+    "SourceImageId": null,
+    "SourceImageRegion": null,
+    "FreeTierEligible": true,
+    "State": "available",
+    "Architecture": "x86_64",
+    "CreationDate": "2025-08-01T16:02:03.000Z"
+  },
+  {
+    "ImageId": "ami-034292739b6480a6b",
+    "Name": "RHEL-10.0.0_HVM-20250618-x86_64-0-Hourly2-GP3",
+    "PlatformDetails": "Red Hat Enterprise Linux",
+    "Description": "Provided by Red Hat, Inc.",
+    "Hypervisor": "xen",
+    "SourceImageId": null,
+    "SourceImageRegion": null,
+    "FreeTierEligible": true,
+    "State": "available",
+    "Architecture": "x86_64",
+    "CreationDate": "2025-06-20T06:03:11.000Z"
+  },
+  {
+    "ImageId": "ami-08526b399bb6eb2c7",
+    "Name": "RHEL-10.0.0_HVM-20250918-x86_64-0-Hourly2-GP3",
+    "PlatformDetails": "Red Hat Enterprise Linux",
+    "Description": "Provided by Red Hat, Inc.",
+    "Hypervisor": "xen",
+    "SourceImageId": null,
+    "SourceImageRegion": null,
+    "FreeTierEligible": true,
+    "State": "available",
+    "Architecture": "x86_64",
+    "CreationDate": "2025-09-18T13:31:16.000Z"
+  },
+  {
+    "ImageId": "ami-080c6c782c2f5b725",
+    "Name": "RHEL-10.0.0_HVM-20251030-x86_64-0-Hourly2-GP3",
+    "PlatformDetails": "Red Hat Enterprise Linux",
+    "Description": "Provided by Red Hat, Inc.",
+    "Hypervisor": "xen",
+    "SourceImageId": null,
+    "SourceImageRegion": null,
+    "FreeTierEligible": true,
+    "State": "available",
+    "Architecture": "x86_64",
+    "CreationDate": "2025-10-30T19:17:18.000Z"
+  },
+  {
+    "ImageId": "ami-09232a2cda00a54c3",
+    "Name": "RHEL-10.1.0_HVM_GA-20251031-x86_64-0-Hourly2-GP3",
+    "PlatformDetails": "Red Hat Enterprise Linux",
+    "Description": "Provided by Red Hat, Inc.",
+    "Hypervisor": "xen",
+    "SourceImageId": null,
+    "SourceImageRegion": null,
+    "FreeTierEligible": true,
+    "State": "available",
+    "Architecture": "x86_64",
+    "CreationDate": "2025-11-05T07:25:08.000Z"
+  },
+  {
+    "ImageId": "ami-0989038dff76173d3",
+    "Name": "RHEL-10.0.0_HVM_GA-20250423-x86_64-0-Hourly2-GP3",
+    "PlatformDetails": "Red Hat Enterprise Linux",
+    "Description": "Provided by Red Hat, Inc.",
+    "Hypervisor": "xen",
+    "SourceImageId": null,
+    "SourceImageRegion": null,
+    "FreeTierEligible": true,
+    "State": "available",
+    "Architecture": "x86_64",
+    "CreationDate": "2025-05-07T15:31:08.000Z"
+  }
+]

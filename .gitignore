@@ -116,6 +116,7 @@ docker-compose.override.yml
 # 🌍 Environment and Config Files
 ########################################
 .env
+./scripts/.env
 .database.env
 .*.env
 .env.*
