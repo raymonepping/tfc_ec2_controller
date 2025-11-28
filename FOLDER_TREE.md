@@ -1,6 +1,6 @@
 
 
-## 📁 Folder Tree - 2025-11-28 11:53:36 ##
+## 📁 Folder Tree - 2025-11-28 13:40:11 ##
 
 ./
 ├── modules/
@@ -23,6 +23,7 @@
 │   └── SCRIPTS.md
 ├── .terraform.lock.hcl
 ├── backend.tf
+├── FOLDER_TREE.md
 ├── main.tf
 ├── outputs.tf
 ├── providers.tf
@@ -31,4 +32,4 @@
 ├── terraform.tfvars
 └── variables.tf
 
-6 directories, 22 files
+6 directories, 23 files

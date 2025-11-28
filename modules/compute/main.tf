@@ -39,4 +39,21 @@ resource "aws_instance" "web_server" {
       Name = "${var.instance_name_prefix}-web-server-${count.index + 1}"
     }
   )
+
+  lifecycle {
+    # New-style lifecycle usage that is actually safe and useful
+
+    # Hard requirement: we only accept 64-bit AMIs
+    precondition {
+      condition     = var.architecture == "x86_64"
+      error_message = "The selected AMI must be x86_64. Got: ${var.architecture}"
+    }
+
+    # Sanity check: instance must have a public IP for this demo
+    postcondition {
+      condition     = self.public_ip != ""
+      error_message = "EC2 instance must have a public IP address for this demo scenario."
+    }
+  }
+
 }
