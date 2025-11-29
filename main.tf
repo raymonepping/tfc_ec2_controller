@@ -33,11 +33,16 @@ locals {
   ) ? module.vpc[0].public_subnet_ids : var.subnet_ids
 
   # Subnet that EC2 instances will use
+  # When enable_vpc = true, always take a subnet from the managed VPC.
+  # When enable_vpc = false, use instance_subnet_id if set, else fall back to subnet_ids[0].
   effective_subnet_id = (
-    var.instance_subnet_id != null && var.instance_subnet_id != ""
-  ) ? var.instance_subnet_id : local.effective_subnet_ids[0]
+    var.enable_vpc && length(local.effective_subnet_ids) > 0
+    ) ? local.effective_subnet_ids[0] : (
+    var.instance_subnet_id != null && var.instance_subnet_id != "" ?
+    var.instance_subnet_id :
+    var.subnet_ids[0]
+  )
 }
-
 
 ##############################################################################
 # Tag module – central place for tag strategy
