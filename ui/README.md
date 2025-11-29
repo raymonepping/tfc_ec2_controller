@@ -63,20 +63,21 @@ http://localhost:4000
 Using the UI
 
 You will see a set of toggles grouped into three sections:
-	•	Core stack
-	•	Networking and entry
-	•	Storage and identity
+ • Core stack
+ • Networking and entry
+ • Storage and identity
 
 The page also shows:
-	•	A status line for the last update
-	•	Metadata about the Git branch and last commit
-	•	The location of features.auto.tfvars
+ • A status line for the last update
+ • Metadata about the Git branch and last commit
+ • The location of features.auto.tfvars
 
 Whenever you change a toggle:
-	1.	The UI sends the new flag values to POST /api/features.
-	2.	server.js writes features.auto.tfvars.
-	3.	server.js calls commit_gh in the repository root.
-	4.	Your HCP Terraform workspace, configured with VCS integration, picks up the commit and runs plan and apply according to its settings.
+
+ 1. The UI sends the new flag values to POST /api/features.
+ 2. server.js writes features.auto.tfvars.
+ 3. server.js calls commit_gh in the repository root.
+ 4. Your HCP Terraform workspace, configured with VCS integration, picks up the commit and runs plan and apply according to its settings.
 
 ⸻
 
@@ -119,15 +120,15 @@ GET /api/meta
 ```
 
 Returns repository metadata for the UI:
-	•	branch
-	•	last_commit
-	•	features_file
+ • branch
+ • last_commit
+ • features_file
 
 The static frontend is served from ui/public.
 
 ⸻
 
 Notes
-	•	The UI is intentionally minimal. It is not an approval system and it does not replace the Terraform Cloud interface.
-	•	Treat commit_gh as the gatekeeper. If you want an approval step, add it to that script.
-	•	For workshops you can keep the Terraform code untouched and let participants flip switches with this UI.
+ • The UI is intentionally minimal. It is not an approval system and it does not replace the Terraform Cloud interface.
+ • Treat commit_gh as the gatekeeper. If you want an approval step, add it to that script.
+ • For workshops you can keep the Terraform code untouched and let participants flip switches with this UI.
