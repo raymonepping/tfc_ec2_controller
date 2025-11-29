@@ -73,18 +73,22 @@ async function writeFlags(flags) {
   await fs.writeFile(FEATURES_FILE, lines.join("\n"), "utf8");
 }
 
+// Run commit_gh from the repo root and return a Promise
 function commitAndPush() {
   return new Promise((resolve, reject) => {
-    const cmd = "./commit_gh";
     exec("commit_gh", { cwd: REPO_ROOT }, (error, stdout, stderr) => {
       if (error) {
         console.error("commit_gh failed:", error);
-        console.error(stderr);
-        return res.status(500).json({ error: "commit_gh failed" });
+        if (stderr) {
+          console.error(stderr);
+        }
+        return reject(new Error("commit_gh failed"));
       }
 
-      console.log(stdout);
-      return res.json({ ok: true });
+      if (stdout) {
+        console.log(stdout);
+      }
+      resolve();
     });
   });
 }

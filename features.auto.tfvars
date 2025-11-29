@@ -5,7 +5,7 @@
 ##############################################################################
 
 enable_stack = true
-enable_instances = true
+enable_instances = false
 enable_alb = true
 enable_dns = true
 enable_storage = true
