@@ -1,0 +1,24 @@
+{
+  "name": "tfc_ec2_controller",
+  "version": "1.0.0",
+  "description": "````markdown # EC2 + ALB Modular Demo with Terraform",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raymonepping/tfc_ec2_controller.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/raymonepping/tfc_ec2_controller/issues"
+  },
+  "homepage": "https://github.com/raymonepping/tfc_ec2_controller#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}

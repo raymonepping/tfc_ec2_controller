@@ -42,7 +42,14 @@ variable "enable_iam" {
 }
 
 variable "enable_vpc" {
-  description = "Create and use a managed VPC and public subnets instead of an existing VPC"
+  description = <<EOT
+Enable managed VPC + public subnets.
+
+Note:
+Changing this from false -> true (or back) will move the stack to a different
+network and will cause recreation of ALB, SGs, instances and volumes.
+Treat this as an environment-level choice, not a day-to-day toggle.
+EOT
   type        = bool
   default     = false
 }

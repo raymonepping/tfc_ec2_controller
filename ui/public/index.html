@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Terraform EC2 Stack Toggles</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="header">
+        <h1>Terraform EC2 + ALB Stack</h1>
+        <p>Flip the knobs, let Git and HCP Terraform do the rest.</p>
+      </header>
+
+      <main class="main">
+        <section class="card">
+          <h2>Feature flags</h2>
+          <form id="flags-form">
+            <div class="flag">
+              <label>
+                <input type="checkbox" id="enable_stack" />
+                Master stack enabled
+                <span class="hint">Turn everything on or off</span>
+              </label>
+            </div>
+
+            <div class="flag">
+              <label>
+                <input type="checkbox" id="enable_instances" />
+                EC2 instances
+                <span class="hint">Compute layer</span>
+              </label>
+            </div>
+
+            <div class="flag">
+              <label>
+                <input type="checkbox" id="enable_alb" />
+                Application Load Balancer
+                <span class="hint">Front door for the instances</span>
+              </label>
+            </div>
+
+            <div class="flag">
+              <label>
+                <input type="checkbox" id="enable_dns" />
+                Route53 DNS
+                <span class="hint">Friendly name for the ALB</span>
+              </label>
+            </div>
+
+            <div class="flag">
+              <label>
+                <input type="checkbox" id="enable_storage" />
+                Extra data volumes
+                <span class="hint">One EBS per instance</span>
+              </label>
+            </div>
+
+            <div class="flag">
+              <label>
+                <input type="checkbox" id="enable_iam" />
+                IAM role + instance profile
+                <span class="hint">Attach IAM profile to instances</span>
+              </label>
+            </div>
+
+            <div class="flag">
+              <label>
+                <input type="checkbox" id="enable_vpc" />
+                Managed VPC
+                <span class="hint warning">Environment level choice, not a demo toggle</span>
+              </label>
+            </div>
+
+            <button type="submit" class="btn">Save and trigger Terraform</button>
+          </form>
+
+          <div id="status" class="status"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
