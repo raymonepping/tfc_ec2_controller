@@ -17,4 +17,4 @@ enable_dns       = true
 enable_storage   = true
 
 # IAM role and instance profile for the EC2 instances
-enable_iam       = false
+enable_iam       = true
