@@ -13,4 +13,4 @@ enable_iam = true
 enable_vpc = true
 
 # Non-boolean controls
-instance_count = 10
+instance_count = 0
