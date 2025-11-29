@@ -103,8 +103,9 @@ ipython_config.py
 ########################################
 node_modules/
 node_modules/*
-npm-debug.log*
-package-lock.json
+
+# Keep package-lock.json under version control for deterministic installs
+# package-lock.json
 
 ########################################
 # 🐳 Docker
@@ -123,15 +124,16 @@ docker-compose.override.yml
 dataset.jsonl
 lines.txt
 
+# Optional project specific UI env
+ui/.env
+
 ########################################
 # 🛠️ Terraform
 ########################################
 .terraform/
 *.tfstate
 *.tfstate.backup
-.terraform.lock.hcl
 crash.log
-.terraform/
-.terraform.lock.hcl
-*.tfstate
-*.tfstate.backup*.backup
+
+# Keep the provider lock file under version control for consistent provider versions
+# .terraform.lock.hcl
