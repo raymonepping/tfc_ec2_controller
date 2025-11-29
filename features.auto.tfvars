@@ -20,4 +20,4 @@ enable_storage = true
 enable_iam = false
 
 # Use a managed VPC instead of an existing one
-enable_vpc = false
+enable_vpc = true
