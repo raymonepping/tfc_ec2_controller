@@ -24,13 +24,8 @@ subnet_ids = [
 ##############################################################################
 # EC2 instance settings
 ##############################################################################
-
-# Subnet used for the EC2 instances.
-# If you leave instance_subnet_id empty, the module falls back to subnet_ids[0].
-# instance_subnet_id = "subnet-0023ccee8b48c4720"
-# instance_subnet_id   = "" # or remove the line completely
-instance_type        = "t3.micro"
 instance_count       = 2
+instance_type        = "t3.micro"
 instance_name_prefix = "rhel-demo"
 
 # Existing EC2 key pair name for SSH access

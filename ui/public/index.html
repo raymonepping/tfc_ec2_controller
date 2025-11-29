@@ -88,6 +88,7 @@
         align-items: center;
         justify-content: space-between;
         margin: 6px 0;
+        gap: 10px;
       }
 
       .toggle-label {
@@ -105,6 +106,7 @@
         display: inline-block;
         width: 44px;
         height: 24px;
+        flex-shrink: 0;
       }
 
       .switch input {
@@ -140,6 +142,28 @@
 
       input:checked + .slider:before {
         transform: translateX(18px);
+      }
+
+      /* instance count slider */
+
+      .range-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 150px;
+      }
+
+      .range-wrapper input[type="range"] {
+        width: 110px;
+        accent-color: #22c55e;
+      }
+
+      .pill {
+        padding: 2px 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.7);
+        font-size: 0.75rem;
+        background: rgba(15, 23, 42, 0.9);
       }
 
       .status {
@@ -221,6 +245,25 @@
               <input type="checkbox" id="enable_instances" />
               <span class="slider"></span>
             </label>
+          </div>
+
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-label">Instance count</div>
+              <div class="toggle-description">
+                Number of EC2 instances behind the ALB.
+              </div>
+            </div>
+            <div class="range-wrapper">
+              <input
+                type="range"
+                id="instance_count"
+                min="0"
+                max="5"
+                step="1"
+              />
+              <span id="instance_count_value" class="pill">2</span>
+            </div>
           </div>
         </div>
 
@@ -330,6 +373,8 @@
       const statusMessage = document.getElementById("statusMessage");
       const statusBadge = document.getElementById("statusBadge");
       const metaBox = document.getElementById("meta");
+      const instanceSlider = document.getElementById("instance_count");
+      const instanceLabel = document.getElementById("instance_count_value");
 
       function setStatus(message, state = "idle") {
         statusMessage.textContent = message;
@@ -381,12 +426,21 @@
             return;
           }
           const flags = await res.json();
+
           flagKeys.forEach((key) => {
             const el = document.getElementById(key);
             if (el) {
               el.checked = Boolean(flags[key]);
             }
           });
+
+          const count =
+            typeof flags.instance_count === "number"
+              ? flags.instance_count
+              : 2;
+          instanceSlider.value = count;
+          instanceLabel.textContent = count;
+
           setStatus("Feature flags loaded, flip switches as needed.", "idle");
         } catch (err) {
           console.error(err);
@@ -398,12 +452,15 @@
         try {
           setStatus("Saving flags and pushing to Git...", "idle");
           const body = {};
+
           flagKeys.forEach((key) => {
             const el = document.getElementById(key);
             if (el) {
               body[key] = el.checked;
             }
           });
+
+          body.instance_count = parseInt(instanceSlider.value, 10);
 
           const res = await fetch("/api/features", {
             method: "POST",
@@ -417,21 +474,28 @@
           }
 
           const data = await res.json();
-          setStatus("Flags saved and commit_gh completed.", "ok");
           console.debug("Backend response:", data);
+          setStatus("Flags saved and commit_gh completed.", "ok");
         } catch (err) {
           console.error(err);
           setStatus("Failed to save flags or push to Git.", "error");
         }
       }
 
-      // Attach listeners
       flagKeys.forEach((key) => {
         const el = document.getElementById(key);
         if (!el) return;
         el.addEventListener("change", () => {
           saveFlags();
         });
+      });
+
+      instanceSlider.addEventListener("input", (e) => {
+        instanceLabel.textContent = e.target.value;
+      });
+
+      instanceSlider.addEventListener("change", () => {
+        saveFlags();
       });
 
       loadMeta();

@@ -13,12 +13,12 @@ const { exec } = require("child_process");
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// Repo and features file locations (adjust if needed)
+// Repo and features file locations
 const REPO_ROOT = path.join(__dirname, "..");
 const FEATURES_FILE = path.join(REPO_ROOT, "features.auto.tfvars");
 
-// Flags that we control from the UI
-const FLAG_KEYS = [
+// Boolean flags managed by the UI
+const BOOL_FLAG_KEYS = [
   "enable_stack",
   "enable_instances",
   "enable_alb",
@@ -27,6 +27,8 @@ const FLAG_KEYS = [
   "enable_iam",
   "enable_vpc",
 ];
+
+const INSTANCE_COUNT_KEY = "instance_count";
 
 // Defaults when no features.auto.tfvars exists yet
 const DEFAULT_FLAGS = {
@@ -37,12 +39,13 @@ const DEFAULT_FLAGS = {
   enable_storage: true,
   enable_iam: true,
   enable_vpc: false,
+  instance_count: 2,
 };
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-// Helper to run shell commands and capture stdout/stderr
+// Helper to run shell commands
 function runCommand(cmd, options = {}) {
   return new Promise((resolve, reject) => {
     exec(cmd, options, (error, stdout, stderr) => {
@@ -54,13 +57,14 @@ function runCommand(cmd, options = {}) {
   });
 }
 
-// Read current flags from features.auto.tfvars (or fall back to defaults)
+// Read current flags from features.auto.tfvars or fall back to defaults
 async function readFlags() {
   try {
     const content = await fs.readFile(FEATURES_FILE, "utf8");
     const flags = { ...DEFAULT_FLAGS };
 
-    for (const key of FLAG_KEYS) {
+    // booleans
+    for (const key of BOOL_FLAG_KEYS) {
       const regex = new RegExp(`^${key}\\s*=\\s*(true|false)`, "m");
       const match = content.match(regex);
       if (match) {
@@ -68,9 +72,16 @@ async function readFlags() {
       }
     }
 
+    // instance_count
+    const countMatch = content.match(
+      new RegExp(`^${INSTANCE_COUNT_KEY}\\s*=\\s*([0-9]+)`, "m"),
+    );
+    if (countMatch) {
+      flags.instance_count = Number(countMatch[1]);
+    }
+
     return flags;
   } catch {
-    // If the file does not exist yet, start from defaults
     return { ...DEFAULT_FLAGS };
   }
 }
@@ -79,25 +90,28 @@ async function readFlags() {
 async function writeFlags(flags) {
   const lines = [
     "##############################################################################",
-    "# Feature toggles - managed by the Terraform EC2 Control Panel UI",
+    "# Feature toggles - managed by Node UI",
     "#",
-    "# This file is meant to be changed from the Node UI while demoing.",
+    "# Do not edit by hand during demos. Use the UI instead.",
     "##############################################################################",
     "",
   ];
 
-  for (const key of FLAG_KEYS) {
+  for (const key of BOOL_FLAG_KEYS) {
     const value = flags[key] ? "true" : "false";
     lines.push(`${key} = ${value}`);
   }
 
   lines.push("");
+  lines.push("# Non-boolean controls");
+  lines.push(`${INSTANCE_COUNT_KEY} = ${flags.instance_count}`);
+  lines.push("");
+
   await fs.writeFile(FEATURES_FILE, lines.join("\n"), "utf8");
 }
 
-// Call commit_gh in the repo root to push the updated flags
+// Call commit_gh in the repo root
 async function commitAndPush() {
-  // commit_gh lives in your PATH, so we just call it
   const { stdout, stderr } = await runCommand("commit_gh", {
     cwd: REPO_ROOT,
   });
@@ -110,7 +124,7 @@ async function commitAndPush() {
   return { stdout, stderr };
 }
 
-// Optional metadata: branch and last commit for display in the UI
+// Metadata for display
 async function getGitMeta() {
   try {
     const branchRes = await runCommand("git rev-parse --abbrev-ref HEAD", {
@@ -118,7 +132,7 @@ async function getGitMeta() {
     });
     const commitRes = await runCommand(
       "git log -1 --pretty=format:%h%x20%an%x20%ad%x20%s",
-      { cwd: REPO_ROOT }
+      { cwd: REPO_ROOT },
     );
 
     return {
@@ -147,7 +161,7 @@ app.get("/api/features", async (req, res) => {
   }
 });
 
-// API: get git/meta information for display
+// API: git/meta info
 app.get("/api/meta", async (req, res) => {
   try {
     const meta = await getGitMeta();
@@ -165,9 +179,18 @@ app.post("/api/features", async (req, res) => {
     const current = await readFlags();
     const next = { ...current };
 
-    for (const key of FLAG_KEYS) {
+    // booleans
+    for (const key of BOOL_FLAG_KEYS) {
       if (Object.prototype.hasOwnProperty.call(body, key)) {
         next[key] = Boolean(body[key]);
+      }
+    }
+
+    // instance_count, clamped 0..10
+    if (Object.prototype.hasOwnProperty.call(body, INSTANCE_COUNT_KEY)) {
+      const n = Number(body[INSTANCE_COUNT_KEY]);
+      if (!Number.isNaN(n)) {
+        next.instance_count = Math.min(Math.max(Math.trunc(n), 0), 10);
       }
     }
 
@@ -189,5 +212,7 @@ app.post("/api/features", async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Terraform EC2 Control Panel listening on http://localhost:${PORT}`);
+  console.log(
+    `Terraform EC2 Control Panel listening on http://localhost:${PORT}`,
+  );
 });
