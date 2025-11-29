@@ -24,7 +24,7 @@ subnet_ids = [
 ##############################################################################
 # EC2 instance settings
 ##############################################################################
-instance_count       = 5
+# instance_count       = 5
 instance_type        = "t3.micro"
 instance_name_prefix = "rhel-demo"
 
