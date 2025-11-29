@@ -55,3 +55,9 @@ variable "architecture" {
   type        = string
   default     = "x86_64"
 }
+
+variable "enable_instances" {
+  description = "Whether to create EC2 instances"
+  type        = bool
+  default     = true
+}

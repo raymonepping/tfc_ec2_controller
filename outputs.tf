@@ -32,8 +32,8 @@ output "subnet_id_effective" {
 ##############################################################################
 
 output "alb_dns_name" {
-  description = "DNS name of the Application Load Balancer (empty if ALB disabled)"
-  value       = var.enable_alb && length(module.alb) > 0 ? module.alb[0].alb_dns_name : ""
+  description = "ALB DNS name or empty string if ALB is disabled"
+  value       = var.enable_stack && var.enable_alb && length(module.alb) > 0 ? module.alb[0].alb_dns_name : ""
 }
 
 output "alb_http_url" {
@@ -43,7 +43,7 @@ output "alb_http_url" {
 
 output "alb_fqdn" {
   description = "Route53 DNS name pointing at the ALB (empty if DNS or ALB disabled or record not created)"
-  value       = var.enable_alb && var.enable_dns && var.create_dns_record && length(module.dns) > 0 ? module.dns[0].record_fqdn : ""
+  value       = var.enable_stack && var.enable_alb && var.enable_dns && var.create_dns_record && length(module.dns) > 0 ? module.dns[0].record_fqdn : ""
 }
 
 ##############################################################################
@@ -52,7 +52,7 @@ output "alb_fqdn" {
 
 output "data_volume_ids" {
   description = "EBS data volume IDs created for the EC2 instances"
-  value       = var.enable_storage && var.data_volume_enabled && length(module.storage) > 0 ? module.storage[0].volume_ids : []
+  value       = var.enable_stack && var.enable_storage && var.data_volume_enabled && length(module.storage) > 0 ? module.storage[0].volume_ids : []
 }
 
 output "data_volume_names" {

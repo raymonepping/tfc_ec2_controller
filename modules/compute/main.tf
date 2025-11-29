@@ -3,7 +3,9 @@
 ##############################################################################
 
 resource "aws_instance" "web_server" {
-  count         = var.instance_count
+  # Toggle instance creation
+  count = var.enable_instances ? var.instance_count : 0    
+
   ami           = var.ami_id
   instance_type = var.instance_type
 

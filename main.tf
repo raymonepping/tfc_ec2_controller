@@ -61,7 +61,7 @@ module "tags" {
 ##############################################################################
 module "storage" {
   source = "./modules/storage"
-  count  = var.enable_storage ? 1 : 0
+  count  = var.enable_stack && var.enable_storage ? 1 : 0
 
   create_data_volumes = var.data_volume_enabled
 
@@ -125,6 +125,9 @@ module "compute" {
 
   # Lifecycle guardrail input
   architecture = var.architecture
+
+  # Toggle to enable/disable the compute module
+  enable_instances = var.enable_stack && var.enable_instances  
 }
 
 ##############################################################################
@@ -138,7 +141,7 @@ module "compute" {
 ##############################################################################
 module "alb" {
   source = "./modules/alb"
-  count  = var.enable_alb ? 1 : 0
+  count  = var.enable_stack && var.enable_alb ? 1 : 0
 
   vpc_id       = var.vpc_id
   subnet_ids   = var.subnet_ids
@@ -163,7 +166,7 @@ module "alb" {
 ##############################################################################
 module "dns" {
   source = "./modules/dns"
-  count  = var.enable_alb && var.enable_dns ? 1 : 0
+  count  = var.enable_stack && var.enable_alb && var.enable_dns ? 1 : 0
 
   create_record = var.create_dns_record
   zone_id       = var.route53_zone_id

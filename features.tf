@@ -2,8 +2,20 @@
 # Feature flags
 #
 # Central switches to turn major building blocks on or off.
-# Override via terraform.tfvars or workspace variables.
+# Override via terraform.tfvars or a separate features.auto.tfvars file.
 ##############################################################################
+
+variable "enable_stack" {
+  description = "Master switch. If false, no EC2, ALB, DNS or extra storage is created"
+  type        = bool
+  default     = true
+}
+
+variable "enable_instances" {
+  description = "Enable EC2 instances from the compute module"
+  type        = bool
+  default     = true
+}
 
 variable "enable_alb" {
   description = "Enable ALB + target group + listener in front of the EC2 instances"
