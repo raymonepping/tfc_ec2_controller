@@ -17,16 +17,27 @@
 # Locals – helper values for AMI and subnet selection
 ##############################################################################
 locals {
+  # Choose between explicit AMI and the RHEL 10 data source
   effective_ami_id = (
     var.ami_id != null && var.ami_id != ""
   ) ? var.ami_id : data.aws_ami.rhel_10.id
-}
 
-locals {
+  # Choose between managed VPC and existing VPC
+  effective_vpc_id = (
+    var.enable_stack && var.enable_vpc && length(module.vpc) > 0
+  ) ? module.vpc[0].vpc_id : var.vpc_id
+
+  # Choose between managed public subnets and provided subnet_ids
+  effective_subnet_ids = (
+    var.enable_stack && var.enable_vpc && length(module.vpc) > 0
+  ) ? module.vpc[0].public_subnet_ids : var.subnet_ids
+
+  # Subnet that EC2 instances will use
   effective_subnet_id = (
     var.instance_subnet_id != null && var.instance_subnet_id != ""
-  ) ? var.instance_subnet_id : var.subnet_ids[0]
+  ) ? var.instance_subnet_id : local.effective_subnet_ids[0]
 }
+
 
 ##############################################################################
 # Tag module – central place for tag strategy
@@ -44,6 +55,26 @@ module "tags" {
   application = var.application
   owner       = var.owner
   extra_tags  = var.extra_tags
+}
+
+##############################################################################
+# VPC module – optional managed VPC and public subnets
+#
+# When enable_vpc = true, this module:
+#   - Creates a VPC and public subnets
+#   - Exposes vpc_id and public_subnet_ids
+#
+# When enable_vpc = false, the stack uses the existing vpc_id and subnet_ids
+# that you pass in via variables.
+##############################################################################
+module "vpc" {
+  source = "./modules/vpc"
+  count  = var.enable_stack && var.enable_vpc ? 1 : 0
+
+  vpc_cidr_block      = var.vpc_cidr_block
+  azs                 = var.vpc_azs
+  public_subnet_cidrs = var.public_subnet_cidrs
+  tags                = module.tags.effective_tags
 }
 
 ##############################################################################
@@ -86,7 +117,7 @@ module "storage" {
 module "network" {
   source = "./modules/network"
 
-  vpc_id              = var.vpc_id
+  vpc_id              = local.effective_vpc_id
   security_group_name = var.security_group_name
   ssh_ingress_cidr    = var.ssh_ingress_cidr
   http_ingress_cidr   = var.http_ingress_cidr
@@ -130,17 +161,17 @@ module "compute" {
   iam_instance_profile = var.enable_stack && var.enable_iam && length(module.iam) > 0 ? module.iam[0].instance_profile_name : null
 
   # Toggle to enable/disable the compute module
-  enable_instances = var.enable_stack && var.enable_instances  
+  enable_instances = var.enable_stack && var.enable_instances
 }
 
 module "iam" {
   source = "./modules/iam"
   count  = var.enable_stack && var.enable_iam ? 1 : 0
 
-  role_name            = var.iam_role_name
+  role_name             = var.iam_role_name
   instance_profile_name = var.iam_instance_profile_name
-  policy_arns          = var.iam_policy_arns
-  tags                 = module.tags.effective_tags
+  policy_arns           = var.iam_policy_arns
+  tags                  = module.tags.effective_tags
 }
 
 
@@ -157,8 +188,8 @@ module "alb" {
   source = "./modules/alb"
   count  = var.enable_stack && var.enable_alb ? 1 : 0
 
-  vpc_id       = var.vpc_id
-  subnet_ids   = var.subnet_ids
+  vpc_id       = local.effective_vpc_id
+  subnet_ids   = local.effective_subnet_ids
   instance_ids = module.compute.instance_ids
 
   alb_name      = "ec2-demo-alb"

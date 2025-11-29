@@ -211,7 +211,29 @@ variable "iam_instance_profile_name" {
 variable "iam_policy_arns" {
   description = "List of IAM policy ARNs to attach to the EC2 role"
   type        = list(string)
-  default     = [
+  default = [
     "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   ]
+}
+
+##############################################################################
+# Managed VPC configuration (used when enable_vpc = true)
+##############################################################################
+
+variable "vpc_cidr_block" {
+  description = "CIDR block for the managed VPC (only used when enable_vpc = true)"
+  type        = string
+  default     = "10.0.0.0/16"
+}
+
+variable "vpc_azs" {
+  description = "Availability zones to use for public subnets when creating a VPC"
+  type        = list(string)
+  default     = ["eu-north-1a", "eu-north-1b", "eu-north-1c"]
+}
+
+variable "public_subnet_cidrs" {
+  description = "CIDR blocks for public subnets when creating a VPC (must match length of vpc_azs)"
+  type        = list(string)
+  default     = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
 }

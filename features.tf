@@ -38,5 +38,11 @@ variable "enable_storage" {
 variable "enable_iam" {
   description = "Enable IAM role and instance profile for EC2 instances"
   type        = bool
-  default     = true
+  default     = false
+}
+
+variable "enable_vpc" {
+  description = "Create and use a managed VPC and public subnets instead of an existing VPC"
+  type        = bool
+  default     = false
 }

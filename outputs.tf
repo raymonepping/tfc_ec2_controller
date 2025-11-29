@@ -65,7 +65,6 @@ output "data_volume_attachments" {
   value       = var.enable_stack && var.enable_storage && var.data_volume_enabled && length(module.storage) > 0 ? module.storage[0].attachment_ids : []
 }
 
-
 output "iam_role_name" {
   description = "IAM role name used by the EC2 instances (empty if IAM disabled)"
   value       = var.enable_stack && var.enable_iam && length(module.iam) > 0 ? module.iam[0].role_name : ""
@@ -74,4 +73,14 @@ output "iam_role_name" {
 output "iam_instance_profile_name" {
   description = "IAM instance profile name attached to EC2 (empty if IAM disabled)"
   value       = var.enable_stack && var.enable_iam && length(module.iam) > 0 ? module.iam[0].instance_profile_name : ""
+}
+
+output "vpc_id_effective" {
+  description = "VPC ID actually used by the stack (managed or existing)"
+  value       = local.effective_vpc_id
+}
+
+output "subnet_ids_effective" {
+  description = "Subnet IDs actually used by the stack (managed or existing)"
+  value       = local.effective_subnet_ids
 }
