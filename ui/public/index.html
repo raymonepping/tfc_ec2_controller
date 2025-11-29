@@ -88,7 +88,6 @@
         align-items: center;
         justify-content: space-between;
         margin: 6px 0;
-        gap: 10px;
       }
 
       .toggle-label {
@@ -106,7 +105,6 @@
         display: inline-block;
         width: 44px;
         height: 24px;
-        flex-shrink: 0;
       }
 
       .switch input {
@@ -144,26 +142,53 @@
         transform: translateX(18px);
       }
 
-      /* instance count slider */
+      .instance-range-row {
+        margin: 10px 0 4px;
+      }
 
-      .range-wrapper {
+      .instance-range-wrapper {
         display: flex;
         align-items: center;
         gap: 8px;
-        min-width: 150px;
+        margin-top: 4px;
       }
 
-      .range-wrapper input[type="range"] {
-        width: 110px;
-        accent-color: #22c55e;
+      .instance-range {
+        flex: 1;
+        appearance: none;
+        height: 8px;
+        border-radius: 999px;
+        background: #1f2937;
+        outline: none;
       }
 
-      .pill {
+      .instance-range::-webkit-slider-thumb {
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #22c55e;
+        cursor: pointer;
+        border: 2px solid #0f172a;
+      }
+
+      .instance-range::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #22c55e;
+        cursor: pointer;
+        border: 2px solid #0f172a;
+      }
+
+      .instance-count-badge {
+        min-width: 20px;
+        text-align: center;
         padding: 2px 8px;
         border-radius: 999px;
-        border: 1px solid rgba(148, 163, 184, 0.7);
+        background: #020617;
+        border: 1px solid #22c55e;
         font-size: 0.75rem;
-        background: rgba(15, 23, 42, 0.9);
       }
 
       .status {
@@ -247,22 +272,21 @@
             </label>
           </div>
 
-          <div class="toggle-row">
-            <div>
-              <div class="toggle-label">Instance count</div>
-              <div class="toggle-description">
-                Number of EC2 instances behind the ALB.
-              </div>
+          <div class="instance-range-row">
+            <div class="toggle-label">Instance count</div>
+            <div class="toggle-description">
+              Number of EC2 instances behind the ALB.
             </div>
-            <div class="range-wrapper">
+            <div class="instance-range-wrapper">
               <input
                 type="range"
                 id="instance_count"
+                class="instance-range"
                 min="0"
-                max="5"
+                max="10"
                 step="1"
               />
-              <span id="instance_count_value" class="pill">2</span>
+              <span class="instance-count-badge" id="instance_count_value">2</span>
             </div>
           </div>
         </div>
@@ -373,8 +397,9 @@
       const statusMessage = document.getElementById("statusMessage");
       const statusBadge = document.getElementById("statusBadge");
       const metaBox = document.getElementById("meta");
-      const instanceSlider = document.getElementById("instance_count");
-      const instanceLabel = document.getElementById("instance_count_value");
+
+      const instanceCountInput = document.getElementById("instance_count");
+      const instanceCountValue = document.getElementById("instance_count_value");
 
       function setStatus(message, state = "idle") {
         statusMessage.textContent = message;
@@ -434,12 +459,10 @@
             }
           });
 
-          const count =
-            typeof flags.instance_count === "number"
-              ? flags.instance_count
-              : 2;
-          instanceSlider.value = count;
-          instanceLabel.textContent = count;
+          if (typeof flags.instance_count === "number" && instanceCountInput) {
+            instanceCountInput.value = flags.instance_count;
+            instanceCountValue.textContent = String(flags.instance_count);
+          }
 
           setStatus("Feature flags loaded, flip switches as needed.", "idle");
         } catch (err) {
@@ -460,7 +483,9 @@
             }
           });
 
-          body.instance_count = parseInt(instanceSlider.value, 10);
+          if (instanceCountInput) {
+            body.instance_count = Number(instanceCountInput.value);
+          }
 
           const res = await fetch("/api/features", {
             method: "POST",
@@ -474,14 +499,15 @@
           }
 
           const data = await res.json();
-          console.debug("Backend response:", data);
           setStatus("Flags saved and commit_gh completed.", "ok");
+          console.debug("Backend response:", data);
         } catch (err) {
           console.error(err);
           setStatus("Failed to save flags or push to Git.", "error");
         }
       }
 
+      // Attach listeners
       flagKeys.forEach((key) => {
         const el = document.getElementById(key);
         if (!el) return;
@@ -490,13 +516,16 @@
         });
       });
 
-      instanceSlider.addEventListener("input", (e) => {
-        instanceLabel.textContent = e.target.value;
-      });
-
-      instanceSlider.addEventListener("change", () => {
-        saveFlags();
-      });
+      if (instanceCountInput) {
+        instanceCountInput.addEventListener("input", () => {
+          instanceCountValue.textContent = String(
+            Number(instanceCountInput.value),
+          );
+        });
+        instanceCountInput.addEventListener("change", () => {
+          saveFlags();
+        });
+      }
 
       loadMeta();
       loadFlags();
