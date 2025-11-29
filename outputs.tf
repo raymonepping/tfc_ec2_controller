@@ -38,7 +38,7 @@ output "alb_dns_name" {
 
 output "alb_http_url" {
   description = "HTTP URL of the Application Load Balancer (empty if ALB disabled)"
-  value       = var.enable_alb && length(module.alb) > 0 ? "http://${module.alb[0].alb_dns_name}" : ""
+  value       = var.enable_stack && var.enable_alb && length(module.alb) > 0 ? "http://${module.alb[0].alb_dns_name}" : ""
 }
 
 output "alb_fqdn" {
@@ -57,10 +57,10 @@ output "data_volume_ids" {
 
 output "data_volume_names" {
   description = "EBS data volume names created for the EC2 instances"
-  value       = var.enable_storage && var.data_volume_enabled && length(module.storage) > 0 ? module.storage[0].volume_names : []
+  value       = var.enable_stack && var.enable_storage && var.data_volume_enabled && length(module.storage) > 0 ? module.storage[0].volume_names : []
 }
 
 output "data_volume_attachments" {
   description = "IDs of the data volume attachments"
-  value       = var.enable_storage && var.data_volume_enabled && length(module.storage) > 0 ? module.storage[0].attachment_ids : []
+  value       = var.enable_stack && var.enable_storage && var.data_volume_enabled && length(module.storage) > 0 ? module.storage[0].attachment_ids : []
 }
