@@ -1,4 +1,10 @@
 // ui/server.js
+//
+// Minimal control panel for Terraform feature flags.
+// - Reads and writes features.auto.tfvars in the repo root
+// - Exposes a JSON API for the browser UI
+// - Calls commit_gh so HCP Terraform picks up changes
+
 const express = require("express");
 const path = require("path");
 const fs = require("fs/promises");
@@ -7,10 +13,11 @@ const { exec } = require("child_process");
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// Adjust if you run the server from somewhere else
+// Repo and features file locations (adjust if needed)
 const REPO_ROOT = path.join(__dirname, "..");
 const FEATURES_FILE = path.join(REPO_ROOT, "features.auto.tfvars");
 
+// Flags that we control from the UI
 const FLAG_KEYS = [
   "enable_stack",
   "enable_instances",
@@ -21,6 +28,7 @@ const FLAG_KEYS = [
   "enable_vpc",
 ];
 
+// Defaults when no features.auto.tfvars exists yet
 const DEFAULT_FLAGS = {
   enable_stack: true,
   enable_instances: true,
@@ -34,6 +42,19 @@ const DEFAULT_FLAGS = {
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
+// Helper to run shell commands and capture stdout/stderr
+function runCommand(cmd, options = {}) {
+  return new Promise((resolve, reject) => {
+    exec(cmd, options, (error, stdout, stderr) => {
+      if (error) {
+        return reject({ error, stdout, stderr });
+      }
+      resolve({ stdout, stderr });
+    });
+  });
+}
+
+// Read current flags from features.auto.tfvars (or fall back to defaults)
 async function readFlags() {
   try {
     const content = await fs.readFile(FEATURES_FILE, "utf8");
@@ -48,18 +69,19 @@ async function readFlags() {
     }
 
     return flags;
-  } catch (err) {
-    // If the file does not exist yet, return defaults
+  } catch {
+    // If the file does not exist yet, start from defaults
     return { ...DEFAULT_FLAGS };
   }
 }
 
+// Write flags back to features.auto.tfvars
 async function writeFlags(flags) {
   const lines = [
     "##############################################################################",
-    "# Feature toggles - managed by Node UI",
+    "# Feature toggles - managed by the Terraform EC2 Control Panel UI",
     "#",
-    "# Do not edit by hand during demos. Use the UI instead.",
+    "# This file is meant to be changed from the Node UI while demoing.",
     "##############################################################################",
     "",
   ];
@@ -73,24 +95,45 @@ async function writeFlags(flags) {
   await fs.writeFile(FEATURES_FILE, lines.join("\n"), "utf8");
 }
 
-// Run commit_gh from the repo root and return a Promise
-function commitAndPush() {
-  return new Promise((resolve, reject) => {
-    exec("commit_gh", { cwd: REPO_ROOT }, (error, stdout, stderr) => {
-      if (error) {
-        console.error("commit_gh failed:", error);
-        if (stderr) {
-          console.error(stderr);
-        }
-        return reject(new Error("commit_gh failed"));
-      }
-
-      if (stdout) {
-        console.log(stdout);
-      }
-      resolve();
-    });
+// Call commit_gh in the repo root to push the updated flags
+async function commitAndPush() {
+  // commit_gh lives in your PATH, so we just call it
+  const { stdout, stderr } = await runCommand("commit_gh", {
+    cwd: REPO_ROOT,
   });
+
+  if (stderr && stderr.trim().length > 0) {
+    console.error(stderr);
+  }
+  console.log(stdout);
+
+  return { stdout, stderr };
+}
+
+// Optional metadata: branch and last commit for display in the UI
+async function getGitMeta() {
+  try {
+    const branchRes = await runCommand("git rev-parse --abbrev-ref HEAD", {
+      cwd: REPO_ROOT,
+    });
+    const commitRes = await runCommand(
+      "git log -1 --pretty=format:%h%x20%an%x20%ad%x20%s",
+      { cwd: REPO_ROOT }
+    );
+
+    return {
+      branch: branchRes.stdout.trim(),
+      last_commit: commitRes.stdout.trim(),
+      features_file: FEATURES_FILE,
+    };
+  } catch (err) {
+    console.error("Failed to read git meta:", err);
+    return {
+      branch: "unknown",
+      last_commit: "unknown",
+      features_file: FEATURES_FILE,
+    };
+  }
 }
 
 // API: get current flags
@@ -101,6 +144,17 @@ app.get("/api/features", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to read feature flags" });
+  }
+});
+
+// API: get git/meta information for display
+app.get("/api/meta", async (req, res) => {
+  try {
+    const meta = await getGitMeta();
+    res.json(meta);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to read repository metadata" });
   }
 });
 
@@ -118,15 +172,22 @@ app.post("/api/features", async (req, res) => {
     }
 
     await writeFlags(next);
-    await commitAndPush();
+    const gitResult = await commitAndPush();
 
-    res.json({ ok: true, flags: next });
+    res.json({
+      ok: true,
+      flags: next,
+      git: {
+        stdout: gitResult.stdout,
+        stderr: gitResult.stderr,
+      },
+    });
   } catch (err) {
-    console.error(err);
+    console.error("Failed to update flags or push to Git:", err);
     res.status(500).json({ error: "Failed to update flags or push to Git" });
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`Terraform toggle UI listening on http://localhost:${PORT}`);
+  console.log(`Terraform EC2 Control Panel listening on http://localhost:${PORT}`);
 });
