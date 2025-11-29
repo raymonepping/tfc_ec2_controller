@@ -191,3 +191,27 @@ variable "route53_record_name" {
   type        = string
   default     = ""
 }
+
+##############################################################################
+# IAM configuration
+##############################################################################
+
+variable "iam_role_name" {
+  description = "Name of the IAM role used by EC2 instances"
+  type        = string
+  default     = "ec2-demo-role"
+}
+
+variable "iam_instance_profile_name" {
+  description = "Name of the IAM instance profile for EC2 instances"
+  type        = string
+  default     = "ec2-demo-instance-profile"
+}
+
+variable "iam_policy_arns" {
+  description = "List of IAM policy ARNs to attach to the EC2 role"
+  type        = list(string)
+  default     = [
+    "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  ]
+}

@@ -34,3 +34,9 @@ variable "enable_storage" {
   type        = bool
   default     = true
 }
+
+variable "enable_iam" {
+  description = "Enable IAM role and instance profile for EC2 instances"
+  type        = bool
+  default     = true
+}

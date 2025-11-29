@@ -56,6 +56,12 @@ variable "architecture" {
   default     = "x86_64"
 }
 
+variable "iam_instance_profile" {
+  description = "Optional IAM instance profile name to attach to the instances"
+  type        = string
+  default     = null
+}
+
 variable "enable_instances" {
   description = "Whether to create EC2 instances"
   type        = bool

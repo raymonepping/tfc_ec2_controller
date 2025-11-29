@@ -126,9 +126,23 @@ module "compute" {
   # Lifecycle guardrail input
   architecture = var.architecture
 
+  # Optional IAM instance profile coming from the IAM module
+  iam_instance_profile = var.enable_stack && var.enable_iam && length(module.iam) > 0 ? module.iam[0].instance_profile_name : null
+
   # Toggle to enable/disable the compute module
   enable_instances = var.enable_stack && var.enable_instances  
 }
+
+module "iam" {
+  source = "./modules/iam"
+  count  = var.enable_stack && var.enable_iam ? 1 : 0
+
+  role_name            = var.iam_role_name
+  instance_profile_name = var.iam_instance_profile_name
+  policy_arns          = var.iam_policy_arns
+  tags                 = module.tags.effective_tags
+}
+
 
 ##############################################################################
 # ALB module – Application Load Balancer in front of the instances
