@@ -13,5 +13,5 @@ enable_iam = true
 enable_vpc = true
 
 # Non-boolean controls
-instance_count = 0
+instance_count = 1
 os_type = "rhel9"
