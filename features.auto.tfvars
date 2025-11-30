@@ -10,7 +10,7 @@ enable_alb = true
 enable_dns = true
 enable_storage = false
 enable_iam = false
-enable_vpc = true
+enable_vpc = false
 data_volume_encrypted = false
 
 # Non-boolean controls
