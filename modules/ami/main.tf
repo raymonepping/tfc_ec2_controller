@@ -1,34 +1,31 @@
+##############################################################################
+# modules/ami - AMI lookup module
+#
+# Picks an AMI based on OS channel and architecture, unless an explicit
+# override is provided.
+#
+# - If ami_id_override != "" then that value is used directly.
+# - If ami_id_override == "" then the latest matching AMI is discovered.
+##############################################################################
+
 locals {
-  # Filters per OS "channel"
-  # Owner 309956199498 is the official Red Hat AWS account.
   os_filters = {
-    rhel9 = {
-      name   = "RHEL-9*_HVM-*-x86_64-*"
-      owners = ["309956199498"]
-    }
-
     rhel10 = {
-      # Based on names like:
-      # RHEL-10.1.0_HVM_GA-20251031-x86_64-0-Hourly2-GP3
-      # RHEL-10.0.0_HVM-20251030-x86_64-0-Hourly2-GP3
       name   = "RHEL-10*"
-      owners = ["309956199498"]
+      owners = ["309956199498"] # Red Hat
     }
-
-    # Alias for backwards compatibility. Uses RHEL 10 channel.
-    redhat = {
-      name   = "RHEL-10*"
-      owners = ["309956199498"]
+    rhel9 = {
+      name   = "RHEL-9*"
+      owners = ["309956199498"] # Red Hat
     }
   }
 }
 
-# Only do a lookup when no explicit AMI override is supplied.
+# Only do a lookup when there is no explicit override
 data "aws_ami" "latest" {
   count       = var.ami_id_override == "" ? 1 : 0
   most_recent = true
-
-  owners = local.os_filters[var.os_type].owners
+  owners      = local.os_filters[var.os_type].owners
 
   filter {
     name   = "name"
@@ -43,5 +40,10 @@ data "aws_ami" "latest" {
   filter {
     name   = "virtualization-type"
     values = ["hvm"]
+  }
+
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
   }
 }

@@ -1,12 +1,7 @@
 variable "os_type" {
-  description = "The OS channel to look up (rhel10, rhel9, or redhat alias)"
+  description = "AMI OS channel to use (for example rhel10, rhel9)"
   type        = string
   default     = "rhel10"
-
-  validation {
-    condition = contains(["rhel10", "rhel9", "redhat"], var.os_type)
-    error_message = "os_type must be one of: rhel10, rhel9, redhat."
-  }
 }
 
 variable "architecture" {
@@ -16,7 +11,7 @@ variable "architecture" {
 }
 
 variable "ami_id_override" {
-  description = "Explicit AMI ID. When non empty, this is used instead of doing a lookup."
+  description = "Explicit AMI ID to use. If non-empty, lookup is skipped."
   type        = string
   default     = ""
 }

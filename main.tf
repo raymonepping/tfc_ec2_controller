@@ -13,7 +13,7 @@
 # Data sources such as the default RHEL 10 AMI live in data.tf
 ##############################################################################
 
-module "ami_lookup" {
+module "ami" {
   source = "./modules/ami"
 
   os_type         = var.os_type
@@ -27,7 +27,7 @@ module "ami_lookup" {
 locals {
 
   # Choose between explicit AMI and the dynamic lookup module.
-  effective_ami_id = module.ami_lookup.ami_id
+  effective_ami_id = module.ami.ami_id
 
   # Choose between managed VPC and existing VPC
   effective_vpc_id = (

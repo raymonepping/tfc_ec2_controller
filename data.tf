@@ -9,6 +9,6 @@
 ##############################################################################
 
 ##############################################################################
-# AMI lookup is now handled by the ami module.
+# AMI lookup is handled by the ami module.
 # It uses official Red Hat images and respects architecture.
 ##############################################################################

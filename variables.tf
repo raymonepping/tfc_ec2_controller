@@ -29,7 +29,7 @@ variable "instance_subnet_id" {
 ##############################################################################
 
 variable "os_type" {
-  description = "AMI OS channel to use (rhel10 default, or rhel9)"
+  description = "AMI OS channel to use (rhel10 default, rhel9 as alternative)"
   type        = string
   default     = "rhel10"
 }
@@ -80,9 +80,15 @@ variable "http_ingress_cidr" {
 ##############################################################################
 
 variable "ami_id" {
-  description = "Optional override for the AMI ID. If null, use the default RHEL 10 AMI for the region."
+  description = <<EOT
+Optional override for the AMI ID.
+
+If set to a non-empty string, that AMI is used directly.
+If left empty (""), the ami module will automatically pick
+the latest RHEL 10 image in the region for the os_type and architecture.
+EOT
   type        = string
-  default     = null
+  default     = ""
 }
 
 variable "architecture" {
