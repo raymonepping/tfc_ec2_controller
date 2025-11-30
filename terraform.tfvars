@@ -52,6 +52,11 @@ data_volume_size        = 50
 data_volume_type        = "gp3"
 data_volume_device_name = "/dev/xvdb"
 
+data_volume_encrypted   = false
+
+# Optionally specify a KMS key ARN to use for data volume encryption
+# data_volume_kms_key_id  = "arn:aws:kms:eu-north-1:123456789012:key/..."
+
 ##############################################################################
 # DNS integration (Route53 alias record for the ALB)
 ##############################################################################

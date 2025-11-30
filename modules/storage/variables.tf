@@ -38,3 +38,15 @@ variable "tags" {
   description = "Base tags to apply to volumes"
   type        = map(string)
 }
+
+variable "encrypted" {
+  description = "Whether the additional data volumes should be encrypted"
+  type        = bool
+  default     = true
+}
+
+variable "kms_key_id" {
+  description = "Optional KMS key id for encrypting data volumes. If null, use the default EBS key."
+  type        = string
+  default     = null
+}

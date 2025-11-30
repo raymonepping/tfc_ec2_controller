@@ -112,9 +112,13 @@ module "storage" {
   availability_zones = module.compute.instance_azs
   volume_size        = var.data_volume_size
   volume_type        = var.data_volume_type
+  volume_name_prefix = "${var.instance_name_prefix}-data"
   device_name        = var.data_volume_device_name
 
-  volume_name_prefix = "${var.instance_name_prefix}-data"
+  # EBS encryption flags
+  encrypted  = var.data_volume_encrypted
+  kms_key_id = var.data_volume_kms_key_id
+
   tags               = module.tags.effective_tags
 }
 

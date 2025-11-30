@@ -26,6 +26,7 @@ const BOOL_FLAG_KEYS = [
   "enable_storage",
   "enable_iam",
   "enable_vpc",
+  "data_volume_encrypted",  
 ];
 
 const INSTANCE_COUNT_KEY = "instance_count";
@@ -40,6 +41,7 @@ const DEFAULT_FLAGS = {
   enable_storage: true,
   enable_iam: true,
   enable_vpc: false,
+  data_volume_encrypted: false,  
   instance_count: 2,
   os_type: "rhel10",
 };

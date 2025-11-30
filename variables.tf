@@ -152,6 +152,18 @@ variable "data_volume_device_name" {
   default     = "/dev/xvdb"
 }
 
+variable "data_volume_encrypted" {
+  description = "Whether the additional data volume should be encrypted"
+  type        = bool
+  default     = true
+}
+
+variable "data_volume_kms_key_id" {
+  description = "Optional KMS key id for encrypting the data volumes. If null, AWS uses the default EBS KMS key."
+  type        = string
+  default     = null
+}
+
 ##############################################################################
 # Tagging metadata for the tags module
 ##############################################################################

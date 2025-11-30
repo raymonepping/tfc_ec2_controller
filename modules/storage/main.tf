@@ -5,11 +5,14 @@ resource "aws_ebs_volume" "this" {
   size              = var.volume_size
   type              = var.volume_type
 
+  encrypted = var.encrypted
+  kms_key_id = var.kms_key_id != null && var.kms_key_id != "" ? var.kms_key_id : null
+
   tags = merge(
     var.tags,
     {
       Name = "${var.volume_name_prefix}-${count.index + 1}"
-    }
+    },
   )
 }
 

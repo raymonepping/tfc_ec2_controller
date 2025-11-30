@@ -11,7 +11,8 @@ enable_dns = true
 enable_storage = true
 enable_iam = true
 enable_vpc = true
+data_volume_encrypted = false
 
 # Non-boolean controls
-instance_count = 1
+instance_count = 0
 os_type = "rhel9"
