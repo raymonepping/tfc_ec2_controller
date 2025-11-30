@@ -9,7 +9,7 @@ enable_instances = true
 enable_alb = true
 enable_dns = true
 enable_storage = true
-enable_iam = true
+enable_iam = false
 enable_vpc = true
 data_volume_encrypted = true
 
