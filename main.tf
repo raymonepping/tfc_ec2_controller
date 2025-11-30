@@ -13,14 +13,21 @@
 # Data sources such as the default RHEL 10 AMI live in data.tf
 ##############################################################################
 
+module "ami_lookup" {
+  source = "./modules/ami"
+
+  os_type         = var.os_type
+  architecture    = var.architecture
+  ami_id_override = var.ami_id
+}
+
 ##############################################################################
 # Locals – helper values for AMI and subnet selection
 ##############################################################################
 locals {
-  # Choose between explicit AMI and the RHEL 10 data source
-  effective_ami_id = (
-    var.ami_id != null && var.ami_id != ""
-  ) ? var.ami_id : data.aws_ami.rhel_10.id
+
+  # Choose between explicit AMI and the dynamic lookup module.
+  effective_ami_id = module.ami_lookup.ami_id
 
   # Choose between managed VPC and existing VPC
   effective_vpc_id = (
@@ -152,8 +159,9 @@ module "compute" {
   subnet_id            = local.effective_subnet_id
   security_group_id    = module.network.security_group_id
   ssh_key_name         = var.ssh_key_name
-  ami_id               = local.effective_ami_id
-  tags                 = module.tags.effective_tags
+
+  ami_id = local.effective_ami_id
+  tags   = module.tags.effective_tags
 
   # Storage configuration
   root_volume_size = var.root_volume_size

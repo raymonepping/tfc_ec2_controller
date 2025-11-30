@@ -28,6 +28,12 @@ variable "instance_subnet_id" {
 # Compute instance configuration
 ##############################################################################
 
+variable "os_type" {
+  description = "AMI OS channel to use (rhel10 default, or rhel9)"
+  type        = string
+  default     = "rhel10"
+}
+
 variable "instance_type" {
   description = "EC2 instance type."
   type        = string

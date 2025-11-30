@@ -35,9 +35,11 @@ ssh_key_name = "my-keypair"
 # AMI and lifecycle guardrail
 ##############################################################################
 
-# Explicit RHEL 10 AMI. If you set this to null, the data source will
-# automatically pick the latest RHEL 10 in the region.
-ami_id = "ami-08526b399bb6eb2c7"
+# If left empty, the ami_lookup module will automatically pick
+# the latest RHEL 10 image in the region.
+ami_id = ""
+
+# ami_id = "ami-08526b399bb6eb2c7"
 
 # This is validated by the compute module lifecycle precondition.
 # Change this to a wrong architecture to see the guardrail in action.
