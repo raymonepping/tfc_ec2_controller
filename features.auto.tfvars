@@ -7,7 +7,7 @@
 enable_stack = false
 enable_instances = true
 enable_alb = true
-enable_dns = true
+enable_dns = false
 enable_storage = false
 enable_iam = false
 enable_vpc = false
