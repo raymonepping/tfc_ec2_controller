@@ -11,7 +11,7 @@ enable_dns = true
 enable_storage = false
 enable_iam = true
 enable_vpc = true
-data_volume_encrypted = false
+data_volume_encrypted = true
 
 # Non-boolean controls
 instance_count = 2
