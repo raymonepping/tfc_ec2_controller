@@ -15,4 +15,4 @@ data_volume_encrypted = true
 
 # Non-boolean controls
 instance_count = 0
-os_type = "rhel9"
+os_type = "rhel10"
