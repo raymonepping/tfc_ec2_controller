@@ -14,4 +14,4 @@ enable_vpc = true
 
 # Non-boolean controls
 instance_count = 0
-os_type = "rhel10"
+os_type = "rhel9"
