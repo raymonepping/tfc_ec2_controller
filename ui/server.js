@@ -29,6 +29,7 @@ const BOOL_FLAG_KEYS = [
 ];
 
 const INSTANCE_COUNT_KEY = "instance_count";
+const OS_TYPE_KEY = "os_type";
 
 // Defaults when no features.auto.tfvars exists yet
 const DEFAULT_FLAGS = {
@@ -40,6 +41,7 @@ const DEFAULT_FLAGS = {
   enable_iam: true,
   enable_vpc: false,
   instance_count: 2,
+  os_type: "rhel10",
 };
 
 app.use(express.json());
@@ -80,6 +82,14 @@ async function readFlags() {
       flags.instance_count = Number(countMatch[1]);
     }
 
+    // os_type
+    const osMatch = content.match(
+      new RegExp(`^${OS_TYPE_KEY}\\s*=\\s*"(.*)"`, "m"),
+    );
+    if (osMatch && osMatch[1]) {
+      flags.os_type = osMatch[1] === "rhel9" ? "rhel9" : "rhel10";
+    }
+
     return flags;
   } catch {
     return { ...DEFAULT_FLAGS };
@@ -105,6 +115,7 @@ async function writeFlags(flags) {
   lines.push("");
   lines.push("# Non-boolean controls");
   lines.push(`${INSTANCE_COUNT_KEY} = ${flags.instance_count}`);
+  lines.push(`${OS_TYPE_KEY} = "${flags.os_type}"`);
   lines.push("");
 
   await fs.writeFile(FEATURES_FILE, lines.join("\n"), "utf8");
@@ -192,6 +203,12 @@ app.post("/api/features", async (req, res) => {
       if (!Number.isNaN(n)) {
         next.instance_count = Math.min(Math.max(Math.trunc(n), 0), 10);
       }
+    }
+
+    // os_type, clamp to rhel9 or rhel10
+    if (Object.prototype.hasOwnProperty.call(body, OS_TYPE_KEY)) {
+      const raw = String(body[OS_TYPE_KEY] || "").toLowerCase();
+      next.os_type = raw === "rhel9" ? "rhel9" : "rhel10";
     }
 
     await writeFlags(next);

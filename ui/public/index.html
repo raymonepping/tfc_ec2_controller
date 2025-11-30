@@ -83,6 +83,10 @@
         color: #9ca3af;
       }
 
+      .core-section {
+        margin-bottom: 16px;
+      }
+
       .toggle-row {
         display: flex;
         align-items: center;
@@ -191,6 +195,24 @@
         font-size: 0.75rem;
       }
 
+      .instance-type-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 10px;
+      }
+
+      .select-input {
+        min-width: 120px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px solid #4b5563;
+        background: #020617;
+        color: #e5e7eb;
+        font-size: 0.8rem;
+      }
+
       .status {
         margin-top: 16px;
         display: flex;
@@ -241,23 +263,35 @@
 
       <div class="meta" id="meta"></div>
 
-      <div class="sections">
-        <div class="section">
-          <h2>Core stack</h2>
-          <p>Use this to turn the entire EC2 stack on or off, or pause instance creation.</p>
+      <!-- Core stack row -->
+      <div class="section core-section">
+        <h2>Core stack</h2>
+        <p>
+          Use this to turn the entire EC2 stack on or off, or pause instance
+          creation.
+        </p>
 
-          <div class="toggle-row">
-            <div>
-              <div class="toggle-label">Stack enabled</div>
-              <div class="toggle-description">
-                Master switch. When off, all higher level features are considered disabled.
-              </div>
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Stack enabled</div>
+            <div class="toggle-description">
+              Master switch. When off, all higher level features are considered
+              disabled.
             </div>
-            <label class="switch">
-              <input type="checkbox" id="enable_stack" />
-              <span class="slider"></span>
-            </label>
           </div>
+          <label class="switch">
+            <input type="checkbox" id="enable_stack" />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Three column layout -->
+      <div class="sections">
+        <!-- Compute column -->
+        <div class="section">
+          <h2>Compute</h2>
+          <p>Control EC2 instance creation and RHEL version.</p>
 
           <div class="toggle-row">
             <div>
@@ -286,11 +320,27 @@
                 max="10"
                 step="1"
               />
-              <span class="instance-count-badge" id="instance_count_value">2</span>
+              <span class="instance-count-badge" id="instance_count_value"
+                >2</span
+              >
             </div>
+          </div>
+
+          <div class="instance-type-row">
+            <div>
+              <div class="toggle-label">RHEL version</div>
+              <div class="toggle-description">
+                Choose the RHEL major version used by the AMI module.
+              </div>
+            </div>
+            <select id="os_type" class="select-input">
+              <option value="rhel10">RHEL 10</option>
+              <option value="rhel9">RHEL 9</option>
+            </select>
           </div>
         </div>
 
+        <!-- Networking column -->
         <div class="section">
           <h2>Networking and entry</h2>
           <p>Shape how reachable the instances are from the outside world.</p>
@@ -335,6 +385,7 @@
           </div>
         </div>
 
+        <!-- Storage column -->
         <div class="section">
           <h2>Storage and identity</h2>
           <p>Add data volumes and attach IAM roles to your instances.</p>
@@ -343,7 +394,8 @@
             <div>
               <div class="toggle-label">Data volumes</div>
               <div class="toggle-description">
-                Creates one extra EBS volume per instance via the storage module.
+                Creates one extra EBS volume per instance via the storage
+                module.
               </div>
             </div>
             <label class="switch">
@@ -371,9 +423,7 @@
         <div class="status-message" id="statusMessage">
           Waiting for flag state from the backend...
         </div>
-        <div class="status-badge" id="statusBadge">
-          Idle
-        </div>
+        <div class="status-badge" id="statusBadge">Idle</div>
       </div>
 
       <div class="footer">
@@ -400,6 +450,7 @@
 
       const instanceCountInput = document.getElementById("instance_count");
       const instanceCountValue = document.getElementById("instance_count_value");
+      const osTypeSelect = document.getElementById("os_type");
 
       function setStatus(message, state = "idle") {
         statusMessage.textContent = message;
@@ -464,6 +515,15 @@
             instanceCountValue.textContent = String(flags.instance_count);
           }
 
+          if (osTypeSelect) {
+            const value =
+              typeof flags.os_type === "string" &&
+              flags.os_type.toLowerCase() === "rhel9"
+                ? "rhel9"
+                : "rhel10";
+            osTypeSelect.value = value;
+          }
+
           setStatus("Feature flags loaded, flip switches as needed.", "idle");
         } catch (err) {
           console.error(err);
@@ -485,6 +545,10 @@
 
           if (instanceCountInput) {
             body.instance_count = Number(instanceCountInput.value);
+          }
+
+          if (osTypeSelect) {
+            body.os_type = osTypeSelect.value;
           }
 
           const res = await fetch("/api/features", {
@@ -523,6 +587,12 @@
           );
         });
         instanceCountInput.addEventListener("change", () => {
+          saveFlags();
+        });
+      }
+
+      if (osTypeSelect) {
+        osTypeSelect.addEventListener("change", () => {
           saveFlags();
         });
       }

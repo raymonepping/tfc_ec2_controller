@@ -4,13 +4,14 @@
 # Do not edit by hand during demos. Use the UI instead.
 ##############################################################################
 
-enable_stack     = true
+enable_stack = true
 enable_instances = true
-enable_alb       = true
-enable_dns       = true
-enable_storage   = true
-enable_iam       = true
-enable_vpc       = true
+enable_alb = true
+enable_dns = true
+enable_storage = true
+enable_iam = true
+enable_vpc = true
 
 # Non-boolean controls
-instance_count = 5
+instance_count = 0
+os_type = "rhel10"
