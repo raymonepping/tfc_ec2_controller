@@ -159,9 +159,8 @@ module "compute" {
   subnet_id            = local.effective_subnet_id
   security_group_id    = module.network.security_group_id
   ssh_key_name         = var.ssh_key_name
-
-  ami_id = local.effective_ami_id
-  tags   = module.tags.effective_tags
+  ami_id               = local.effective_ami_id
+  tags                 = module.tags.effective_tags
 
   # Storage configuration
   root_volume_size = var.root_volume_size
