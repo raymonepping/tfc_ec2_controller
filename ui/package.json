@@ -4,8 +4,10 @@
   "description": "````markdown # EC2 + ALB Modular Demo with Terraform",
   "main": "index.js",
   "scripts": {
+    "start": "node server.js",
+    "dev": "NODE_ENV=development node server.js",    
     "test": "echo \"Error: no test specified\" && exit 1",
-    "format": "prettier --write ui/public/*.html ui/public/*.js ui/public/*.css"
+    "format": "prettier --write ./public/*.html ./public/*.js ./public/*.css"
   },
   "repository": {
     "type": "git",

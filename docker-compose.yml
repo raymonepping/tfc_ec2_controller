@@ -1,0 +1,13 @@
+services:
+  ui:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    container_name: tfc-ec2-control-panel
+    ports:
+      - "4000:4000"
+    working_dir: /app/ui
+    env_file:
+      - .env
+    volumes:
+      - .:/app
