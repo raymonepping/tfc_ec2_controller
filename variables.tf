@@ -21,19 +21,101 @@ EOT
 }
 
 variable "vpc_id" {
-  description = "Existing VPC ID where EC2 and ALB will live."
+  description = <<EOT
+Existing VPC ID where EC2 and ALB will live.
+
+If set to a non-empty string, this ID is used directly.
+If left empty (""), Terraform will try to locate a VPC by tags (for example vpc_name).
+EOT
   type        = string
+  default     = ""
+}
+
+variable "vpc_name" {
+  description = <<EOT
+Optional logical VPC name to attach to, used for tag-based lookup.
+
+When vpc_id is empty, a data source can select the VPC via tag:Name = vpc_name.
+EOT
+  type        = string
+  default     = ""
 }
 
 variable "subnet_ids" {
-  description = "List of subnet IDs in the VPC, used by ALB and EC2."
+  description = <<EOT
+List of subnet IDs in the VPC, used by ALB and EC2.
+
+If non-empty, these IDs are used directly.
+If empty, subnets can be discovered via tags (for example Tier = "public") in the selected VPC.
+EOT
   type        = list(string)
+  default     = []
+}
+
+variable "subnet_tier_tag_key" {
+  description = <<EOT
+Tag key used to select subnets when subnet_ids are not provided.
+
+For example "Tier" so that subnets with tag:Tier = "public" are selected.
+EOT
+  type        = string
+  default     = "Tier"
+}
+
+variable "subnet_tier_tag_value" {
+  description = <<EOT
+Tag value used to select subnets when subnet_ids are not provided.
+
+For example "public" to select public-facing subnets.
+EOT
+  type        = string
+  default     = "public"
 }
 
 variable "instance_subnet_id" {
-  description = "Subnet ID to place EC2 instances in. If null, the first element of subnet_ids is used."
+  description = <<EOT
+Specific subnet ID to place EC2 instances in.
+
+If null or empty, the first element of effective_subnet_ids is used.
+effective_subnet_ids may come from:
+- managed VPC (vpc module),
+- explicit subnet_ids,
+- or subnets discovered via tag-based lookups.
+EOT
   type        = string
   default     = null
+}
+
+##############################################################################
+# Managed VPC configuration (used when enable_vpc = true)
+##############################################################################
+
+variable "vpc_cidr_block" {
+  description = "CIDR block for the managed VPC (only used when enable_vpc = true)."
+  type        = string
+  default     = "10.0.0.0/16"
+}
+
+variable "vpc_azs" {
+  description = <<EOT
+Availability zones to use for public subnets when creating a VPC.
+
+Defaults are aligned with eu-north-1 for the personal profile.
+Override this in terraform.tfvars or via HCP Terraform variables when using another region.
+EOT
+  type        = list(string)
+  default     = ["eu-north-1a", "eu-north-1b", "eu-north-1c"]
+}
+
+variable "public_subnet_cidrs" {
+  description = <<EOT
+CIDR blocks for public subnets when creating a managed VPC.
+
+Must match the length of vpc_azs.
+Only used when enable_vpc = true.
+EOT
+  type        = list(string)
+  default     = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
 }
 
 ##############################################################################
@@ -249,26 +331,4 @@ variable "iam_policy_arns" {
   default = [
     "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   ]
-}
-
-##############################################################################
-# Managed VPC configuration (used when enable_vpc = true)
-##############################################################################
-
-variable "vpc_cidr_block" {
-  description = "CIDR block for the managed VPC (only used when enable_vpc = true)"
-  type        = string
-  default     = "10.0.0.0/16"
-}
-
-variable "vpc_azs" {
-  description = "Availability zones to use for public subnets when creating a VPC"
-  type        = list(string)
-  default     = ["eu-north-1a", "eu-north-1b", "eu-north-1c"]
-}
-
-variable "public_subnet_cidrs" {
-  description = "CIDR blocks for public subnets when creating a VPC (must match length of vpc_azs)"
-  type        = list(string)
-  default     = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
 }
