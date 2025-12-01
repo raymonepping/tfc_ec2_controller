@@ -22,6 +22,7 @@ locals {
       owner                = "Raymon_Epping"
       ssh_key_name         = "my-keypair"
       region               = "eu-north-1"
+      domain               = "raymon-epping.sbx.hashidemos.io"
       instance_type        = "t3.micro"
       instance_name_prefix = "rhel-demo"
     }
@@ -33,6 +34,7 @@ locals {
       owner                = "workshop-team"
       ssh_key_name         = "my-keypair"
       region               = "eu-west-1"
+      domain               = "raymon-epping.sbx.hashidemos.io"
       instance_type        = "t3.micro"
       instance_name_prefix = "rhel-demo"
     }
@@ -47,6 +49,7 @@ locals {
   effective_cost_center          = coalesce(var.cost_center, local.profile_settings.cost_center)
   effective_application          = coalesce(var.application, local.profile_settings.application)
   effective_owner                = coalesce(var.owner, local.profile_settings.owner)
+  effective_domain               = coalesce(var.root_domain, local.profile_settings.domain)
   effective_ssh_key_name         = coalesce(var.ssh_key_name, local.profile_settings.ssh_key_name)
   effective_instance_type        = coalesce(var.instance_type, try(local.profile_settings.instance_type, null), "t3.micro")
   effective_instance_name_prefix = coalesce(var.instance_name_prefix, try(local.profile_settings.instance_name_prefix, null), "rhel-demo")
@@ -89,5 +92,30 @@ locals {
     var.instance_subnet_id != null && var.instance_subnet_id != "" ?
     var.instance_subnet_id :
     (length(local.effective_subnet_ids) > 0 ? local.effective_subnet_ids[0] : null)
+  )
+}
+
+##############################################################################
+# DNS resolution
+##############################################################################
+
+locals {
+  # Zone id comes either from an explicit variable or from the lookup
+  effective_route53_zone_id = (
+    var.route53_zone_id != "" ? var.route53_zone_id :
+    (local.effective_domain != "" && length(data.aws_route53_zone.selected) > 0
+      ? data.aws_route53_zone.selected[0].zone_id
+      : ""
+    )
+  )
+
+  # Record name defaults to "<application>.<domain>" if not explicitly set
+  effective_route53_record_name = (
+    var.route53_record_name != "" && var.route53_record_name != null ?
+    var.route53_record_name :
+    (local.effective_application != "" && local.effective_domain != "" ?
+      "${local.effective_application}.${local.effective_domain}" :
+      ""
+    )
   )
 }

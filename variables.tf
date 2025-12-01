@@ -297,20 +297,34 @@ variable "extra_tags" {
 # DNS integration (Route 53)
 ##############################################################################
 
-variable "create_dns_record" {
-  description = "Whether to create a Route53 record for the ALB."
-  type        = bool
-  default     = false
+variable "root_domain" {
+  description = <<EOT
+Base DNS zone name (for example example.com).
+
+If null, the value is taken from the selected profile in locals.profiles.
+Used to look up the Route53 hosted zone when route53_zone_id is not provided.
+EOT
+  type        = string
+  default     = null
 }
 
 variable "route53_zone_id" {
-  description = "Route53 hosted zone id where the record will be created."
+  description = <<EOT
+Route53 hosted zone id where the record will be created.
+
+If non-empty, this ID is used directly.
+If empty, Terraform will try to locate the zone by name using root_domain.
+EOT
   type        = string
   default     = ""
 }
 
 variable "route53_record_name" {
-  description = "DNS record name for the ALB, for example ec2-demo.example.com."
+  description = <<EOT
+DNS record name for the ALB, for example ec2-demo.example.com.
+
+If empty, a default of "<application>.<root_domain>" is used.
+EOT
   type        = string
   default     = ""
 }
@@ -344,3 +358,4 @@ variable "root_volume_encrypted" {
   type        = bool
   default     = false
 }
+

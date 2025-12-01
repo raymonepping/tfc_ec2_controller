@@ -43,7 +43,7 @@ output "alb_http_url" {
 
 output "alb_fqdn" {
   description = "Route53 DNS name pointing at the ALB (empty if DNS or ALB disabled or record not created)"
-  value       = var.enable_stack && var.enable_alb && var.enable_dns && var.create_dns_record && length(module.dns) > 0 ? module.dns[0].record_fqdn : ""
+  value       = var.enable_stack && var.enable_alb && var.enable_dns && length(module.dns) > 0 ? module.dns[0].record_fqdn : ""
 }
 
 ##############################################################################

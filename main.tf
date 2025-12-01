@@ -270,8 +270,8 @@ module "dns" {
   count  = var.enable_stack && var.enable_alb && var.enable_dns ? 1 : 0
 
   create_record = var.enable_dns
-  zone_id       = var.route53_zone_id
-  record_name   = var.route53_record_name
+  zone_id       = local.effective_route53_zone_id
+  record_name   = local.effective_route53_record_name
 
   alb_dns_name = module.alb[0].alb_dns_name
   alb_zone_id  = module.alb[0].alb_zone_id

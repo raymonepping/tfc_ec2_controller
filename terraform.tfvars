@@ -64,5 +64,5 @@ data_volume_device_name = "/dev/xvdb"
 # that aliases to the ALB DNS name.
 # create_dns_record = true
 
-route53_zone_id     = "Z08325331FB981V6E7LSO"
-route53_record_name = "ec2-demo.raymon-epping.sbx.hashidemos.io"
+# route53_zone_id     = "Z08325331FB981V6E7LSO"
+# route53_record_name = "ec2-demo.raymon-epping.sbx.hashidemos.io"

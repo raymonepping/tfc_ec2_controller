@@ -49,3 +49,17 @@ data "aws_subnets" "selected_by_tier" {
     values = [var.subnet_tier_tag_value]
   }
 }
+
+##############################################################################
+# Route53 hosted zone lookup
+#
+# When route53_zone_id is empty and effective_domain is set, we resolve the
+# hosted zone by its DNS name.
+##############################################################################
+
+data "aws_route53_zone" "selected" {
+  count = var.route53_zone_id == "" && local.effective_domain != "" ? 1 : 0
+
+  name         = local.effective_domain
+  private_zone = false
+}
