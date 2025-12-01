@@ -4,7 +4,7 @@
 # Do not edit by hand during demos. Use the UI instead.
 ##############################################################################
 
-enable_stack = false
+enable_stack = true
 enable_instances = false
 enable_alb = false
 enable_dns = false
