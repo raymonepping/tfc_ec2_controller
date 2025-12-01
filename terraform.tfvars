@@ -3,10 +3,10 @@
 # These flow into the tags module and end up on every resource
 ##############################################################################
 profile     = "personal"
-environment = "dev"
-cost_center = "personal"
-application = "ec2-alb-demo"
-owner       = "raymon"
+# environment = "dev"
+# cost_center = "personal"
+# application = "ec2-alb-demo"
+# owner       = "raymon"
 
 ##############################################################################
 # AWS region and networking
