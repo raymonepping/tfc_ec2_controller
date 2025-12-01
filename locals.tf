@@ -1,3 +1,6 @@
+##############################################################################
+# Stack and module versions
+##############################################################################
 locals {
   stack_version = "1.0.0"
 
@@ -13,36 +16,9 @@ locals {
   }
 }
 
-locals {
-  profiles = {
-    personal = {
-      environment          = "dev"
-      cost_center          = "personal"
-      application          = "ec2-demo"
-      owner                = "Raymon_Epping"
-      ssh_key_name         = "my-keypair"
-      region               = "eu-north-1"
-      domain               = "raymon-epping.sbx.hashidemos.io"
-      instance_type        = "t3.micro"
-      instance_name_prefix = "rhel-demo"
-    }
-
-    workshop = {
-      environment          = "workshop"
-      cost_center          = "training"
-      application          = "ec2-alb-demo"
-      owner                = "workshop-team"
-      ssh_key_name         = "my-keypair"
-      region               = "eu-west-1"
-      domain               = "raymon-epping.sbx.hashidemos.io"
-      instance_type        = "t3.micro"
-      instance_name_prefix = "rhel-demo"
-    }
-  }
-
-  profile_settings = lookup(local.profiles, var.profile, local.profiles.personal)
-}
-
+##############################################################################
+# Effective settings (profile + overrides)
+##############################################################################
 locals {
   effective_region               = coalesce(var.region, local.profile_settings.region)
   effective_environment          = coalesce(var.environment, local.profile_settings.environment)

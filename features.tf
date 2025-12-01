@@ -26,13 +26,13 @@ variable "enable_alb" {
 variable "enable_dns" {
   description = "Enable Route53 DNS record that points at the ALB"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "enable_storage" {
   description = "Enable extra data EBS volumes via the storage module"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "enable_iam" {
