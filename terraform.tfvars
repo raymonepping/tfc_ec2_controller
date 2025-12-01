@@ -14,19 +14,19 @@ profile = "personal"
 # region = "eu-north-1"  # Optional: uncomment only for local CLI runs
 
 # Existing VPC and subnets to place EC2 + ALB in
-vpc_id = "vpc-02ffa563ad97b1f64"
+# vpc_id = "vpc-02ffa563ad97b1f64" # Optional: uncomment only for local CLI runs
 
-subnet_ids = [
-  "subnet-0023ccee8b48c4720",
-  "subnet-01e01b9485887200d",
-  "subnet-0e958bfc095b39b9e",
-]
+# subnet_ids = [ # Optional: uncomment only for local CLI runs
+#  "subnet-0023ccee8b48c4720",
+#  "subnet-01e01b9485887200d",
+#  "subnet-0e958bfc095b39b9e",
+#]
 
 ##############################################################################
 # EC2 instance settings
 ##############################################################################
-instance_type        = "t3.micro"
-instance_name_prefix = "rhel-demo"
+# instance_type        = "t3.micro"
+# instance_name_prefix = "rhel-demo"
 
 # Existing EC2 key pair name for SSH access
 ssh_key_name = "my-keypair"

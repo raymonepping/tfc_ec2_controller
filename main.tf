@@ -113,6 +113,7 @@ module "storage" {
   device_name        = var.data_volume_device_name
 
   # EBS encryption flags
+
   encrypted  = var.data_volume_encrypted
   kms_key_id = var.data_volume_kms_key_id
 
@@ -171,13 +172,13 @@ module "network" {
 module "compute" {
   source = "./modules/compute"
 
-  instance_type        = var.instance_type
   instance_count       = var.instance_count
-  instance_name_prefix = var.instance_name_prefix
+  ami_id               = local.effective_ami_id
+  instance_type        = local.effective_instance_type
+  instance_name_prefix = local.effective_instance_name_prefix
   subnet_id            = local.effective_subnet_id
   security_group_id    = module.network.security_group_id
   ssh_key_name         = var.ssh_key_name
-  ami_id               = local.effective_ami_id
 
   # Tagging resources inside the compute module
   tags = merge(
@@ -220,7 +221,6 @@ module "iam" {
   )
 
 }
-
 
 ##############################################################################
 # ALB module – Application Load Balancer in front of the instances

@@ -53,9 +53,3 @@ EOT
   type        = bool
   default     = false
 }
-
-variable "enable_storage_encryption" {
-  description = "Toggle encryption for additional data EBS volumes"
-  type        = bool
-  default     = false
-}

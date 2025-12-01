@@ -125,25 +125,25 @@ EOT
 variable "os_type" {
   description = "AMI OS channel to use (rhel10 default, rhel9 as alternative)"
   type        = string
-  default     = "rhel10"
+  default     = null
 }
 
 variable "instance_type" {
   description = "EC2 instance type."
   type        = string
-  default     = "t3.micro"
+  default     = null
 }
 
 variable "instance_count" {
   description = "Number of EC2 instances behind the ALB."
   type        = number
-  default     = 2
+  default     = null
 }
 
 variable "instance_name_prefix" {
   description = "Prefix for the Name tag of EC2 instances."
   type        = string
-  default     = "rhel-demo"
+  default     = null
 }
 
 variable "ssh_key_name" {
@@ -195,11 +195,11 @@ variable "architecture" {
 # Legacy / base tags map (kept for extension if needed)
 ##############################################################################
 
-variable "tags" {
-  description = "Base tags map. Currently not wired into the tags module, but kept for future extension."
-  type        = map(string)
-  default     = null
-}
+# variable "tags" {
+#  description = "Base tags map. Currently not wired into the tags module, but kept for future extension."
+#  type        = map(string)
+#  default     = null
+#}
 
 ##############################################################################
 # Storage configuration
@@ -244,7 +244,7 @@ variable "data_volume_device_name" {
 variable "data_volume_encrypted" {
   description = "Whether the additional data volume should be encrypted"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "data_volume_kms_key_id" {
