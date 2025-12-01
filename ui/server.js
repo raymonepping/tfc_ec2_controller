@@ -123,33 +123,42 @@ async function writeFlags(flags) {
   await fs.writeFile(FEATURES_FILE, lines.join("\n"), "utf8");
 }
 
-// Call commit_gh in the repo root
+// Call commit_gh in the repo root, with a fallback to ./commit_gh.sh
 async function commitAndPush() {
-  // Allow override for debugging: COMMIT_GH_BIN=/opt/homebrew/bin/commit_gh
-  const cmd = process.env.COMMIT_GH_BIN || "commit_gh";
-
+  // First attempt: Brew commit_gh from PATH
   try {
-    const { stdout, stderr } = await runCommand(cmd, {
+    const result = await runCommand("commit_gh", {
       cwd: REPO_ROOT,
     });
 
-    if (stderr && stderr.trim().length > 0) {
-      console.error("[commit_gh] stderr:", stderr);
+    if (result.stderr && result.stderr.trim().length > 0) {
+      console.error(result.stderr);
     }
-    if (stdout && stdout.trim().length > 0) {
-      console.log("[commit_gh] stdout:", stdout);
-    }
+    console.log(result.stdout);
 
-    return { stdout, stderr };
-  } catch (err) {
-    // This is what causes the 500 and the red "Error" badge in the UI
-    const errorMessage =
-      (err && err.stderr) ||
-      (err && err.error && err.error.message) ||
-      "Unknown commit_gh error";
-    console.error("[commit_gh] failed:", errorMessage);
-    throw err;
+    return result;
+  } catch (primaryError) {
+    console.warn(
+      "[server] commit_gh from PATH failed, falling back to ./commit_gh.sh",
+      primaryError,
+    );
   }
+
+  // Fallback: repo local commit_gh.sh
+  const fallbackCmd = process.platform === "win32"
+    ? "bash ./commit_gh.sh"
+    : "./commit_gh.sh";
+
+  const { stdout, stderr } = await runCommand(fallbackCmd, {
+    cwd: REPO_ROOT,
+  });
+
+  if (stderr && stderr.trim().length > 0) {
+    console.error(stderr);
+  }
+  console.log(stdout);
+
+  return { stdout, stderr };
 }
 
 // Metadata for display
