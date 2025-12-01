@@ -1,4 +1,3 @@
-````md
 # AMI Lookup Helper Scripts
 
 This folder contains helper scripts to safely and repeatably discover Amazon Machine Images (AMIs) for use in Terraform projects.
@@ -288,6 +287,3 @@ Use it whenever you need a clean, auditable path from:
 to
 
 > "Here is the exact AMI pattern or id that Terraform will use."
-
-```
-```
