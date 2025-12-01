@@ -11,7 +11,7 @@ profile = "personal"
 ##############################################################################
 # AWS region and networking
 ##############################################################################
-region = "eu-north-1"
+# region = "eu-north-1"  # Optional: uncomment only for local CLI runs
 
 # Existing VPC and subnets to place EC2 + ALB in
 vpc_id = "vpc-02ffa563ad97b1f64"
@@ -25,7 +25,6 @@ subnet_ids = [
 ##############################################################################
 # EC2 instance settings
 ##############################################################################
-# instance_count       = 5
 instance_type        = "t3.micro"
 instance_name_prefix = "rhel-demo"
 
@@ -35,7 +34,6 @@ ssh_key_name = "my-keypair"
 ##############################################################################
 # AMI and lifecycle guardrail
 ##############################################################################
-# ami_id = "ami-08526b399bb6eb2c7"
 # If left empty, the ami_lookup module will automatically pick
 # the latest RHEL 10 image in the region.
 ami_id = ""

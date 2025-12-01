@@ -10,9 +10,14 @@ variable "profile" {
 ##############################################################################
 
 variable "region" {
-  description = "AWS region to deploy into."
+  description = <<EOT
+AWS region to deploy into.
+
+If null, the region is taken from the selected profile in locals.profiles.
+Typically, HCP Terraform workspaces override this via a workspace variable.
+EOT
   type        = string
-  default     = "eu-north-1"
+  default     = null
 }
 
 variable "vpc_id" {
@@ -198,7 +203,6 @@ variable "owner" {
   type        = string
   default     = null
 }
-
 
 variable "extra_tags" {
   description = "Optional extra tags to merge into the base tag set."
