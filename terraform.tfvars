@@ -1,8 +1,7 @@
 ##############################################################################
-# Optional overrides for local CLI runs
-# Most real values should come from HCP Terraform workspace variables.
+# High level profile selection
+# In most cases only this line is needed.
 ##############################################################################
-
 profile = "personal"
 
 ##############################################################################
