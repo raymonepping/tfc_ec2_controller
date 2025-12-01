@@ -54,6 +54,7 @@ node server.js
 ```
 
 Then open:
+
 ```bash
 http://localhost:4000
 ```
@@ -109,6 +110,7 @@ Accepts a JSON body with any subset of the flags and updates features.auto.tfvar
 After writing the file, it calls commit_gh in the repository root.
 
 Example:
+
 ```bash
 curl -X POST http://localhost:4000/api/features \
   -H "Content-Type: application/json" \
