@@ -125,16 +125,31 @@ async function writeFlags(flags) {
 
 // Call commit_gh in the repo root
 async function commitAndPush() {
-  const { stdout, stderr } = await runCommand("commit_gh", {
-    cwd: REPO_ROOT,
-  });
+  // Allow override for debugging: COMMIT_GH_BIN=/opt/homebrew/bin/commit_gh
+  const cmd = process.env.COMMIT_GH_BIN || "commit_gh";
 
-  if (stderr && stderr.trim().length > 0) {
-    console.error(stderr);
+  try {
+    const { stdout, stderr } = await runCommand(cmd, {
+      cwd: REPO_ROOT,
+    });
+
+    if (stderr && stderr.trim().length > 0) {
+      console.error("[commit_gh] stderr:", stderr);
+    }
+    if (stdout && stdout.trim().length > 0) {
+      console.log("[commit_gh] stdout:", stdout);
+    }
+
+    return { stdout, stderr };
+  } catch (err) {
+    // This is what causes the 500 and the red "Error" badge in the UI
+    const errorMessage =
+      (err && err.stderr) ||
+      (err && err.error && err.error.message) ||
+      "Unknown commit_gh error";
+    console.error("[commit_gh] failed:", errorMessage);
+    throw err;
   }
-  console.log(stdout);
-
-  return { stdout, stderr };
 }
 
 // Metadata for display
