@@ -40,16 +40,16 @@ ami_id = ""
 
 # This is validated by the compute module lifecycle precondition.
 # Change this to a wrong architecture to see the guardrail in action.
-architecture = "x86_64"
+# architecture = "x86_64"
 
 ##############################################################################
 # Storage configuration (additional data volume per instance)
 ##############################################################################
 
-data_volume_enabled     = true
-data_volume_size        = 50
-data_volume_type        = "gp3"
-data_volume_device_name = "/dev/xvdb"
+# data_volume_enabled     = true
+# data_volume_size        = 50
+# data_volume_type        = "gp3"
+# data_volume_device_name = "/dev/xvdb"
 
 # data_volume_encrypted = false
 

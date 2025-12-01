@@ -52,17 +52,17 @@ output "alb_fqdn" {
 
 output "data_volume_ids" {
   description = "EBS data volume IDs created for the EC2 instances"
-  value       = var.enable_stack && var.enable_storage && var.data_volume_enabled && length(module.storage) > 0 ? module.storage[0].volume_ids : []
+  value       = var.enable_stack && var.enable_storage && length(module.storage) > 0 ? module.storage[0].volume_ids : []
 }
 
 output "data_volume_names" {
   description = "EBS data volume names created for the EC2 instances"
-  value       = var.enable_stack && var.enable_storage && var.data_volume_enabled && length(module.storage) > 0 ? module.storage[0].volume_names : []
+  value       = var.enable_stack && var.enable_storage && length(module.storage) > 0 ? module.storage[0].volume_names : []
 }
 
 output "data_volume_attachments" {
   description = "IDs of the data volume attachments"
-  value       = var.enable_stack && var.enable_storage && var.data_volume_enabled && length(module.storage) > 0 ? module.storage[0].attachment_ids : []
+  value       = var.enable_stack && var.enable_storage && length(module.storage) > 0 ? module.storage[0].attachment_ids : []
 }
 
 output "iam_role_name" {

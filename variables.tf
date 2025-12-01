@@ -223,16 +223,10 @@ variable "root_volume_type" {
   default     = "gp3"
 }
 
-variable "data_volume_enabled" {
-  description = "Whether to attach an additional data volume to each EC2 instance."
-  type        = bool
-  default     = false
-}
-
 variable "data_volume_size" {
   description = "Size in GiB for the additional data volume."
   type        = number
-  default     = 20
+  default     = 50
 }
 
 variable "data_volume_type" {

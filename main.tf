@@ -103,7 +103,7 @@ module "storage" {
   source = "./modules/storage"
   count  = var.enable_stack && var.enable_storage ? 1 : 0
 
-  create_data_volumes = var.data_volume_enabled
+  create_data_volumes = var.enable_storage
 
   instance_ids       = module.compute.instance_ids
   availability_zones = module.compute.instance_azs

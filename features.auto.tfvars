@@ -7,12 +7,12 @@
 enable_stack = true
 enable_instances = true
 enable_alb = true
-enable_dns = false
+enable_dns = true
 enable_storage = true
-enable_iam = false
+enable_iam = true
 enable_vpc = true
 data_volume_encrypted = true
 
 # Non-boolean controls
-instance_count = 3
+instance_count = 4
 os_type = "rhel10"
