@@ -282,8 +282,9 @@
       <h1>Terraform EC2 Control Panel</h1>
       <p class="subtitle">
         Flip feature flags for your modular EC2 stack. This writes
-        <code>features.auto.tfvars</code> and runs <code>commit_gh</code> so
-        Terraform Cloud can do the rest.
+        <code>features.auto.tfvars</code>. Use
+        <strong>Apply changes to Git</strong> when you want Terraform Cloud to
+        pick up the changes.
       </p>
 
       <div class="meta" id="meta"></div>
@@ -579,7 +580,7 @@
 
       async function saveFlags() {
         try {
-          setStatus("Saving flags and pushing to Git...", "idle");
+          setStatus("Saving flags to features.auto.tfvars...", "idle");
           const body = {};
 
           flagKeys.forEach((key) => {
@@ -609,11 +610,14 @@
           }
 
           const data = await res.json();
-          setStatus("Flags saved and commit_gh completed.", "ok");
+          setStatus(
+            "Flags saved locally. Use Apply changes to Git to create a commit.",
+            "idle",
+          );
           console.debug("Backend response:", data);
         } catch (err) {
           console.error(err);
-          setStatus("Failed to save flags or push to Git.", "error");
+          setStatus("Failed to save flags.", "error");
         }
       }
 
@@ -640,6 +644,50 @@
       if (osTypeSelect) {
         osTypeSelect.addEventListener("change", () => {
           saveFlags();
+        });
+      }
+
+      const applyButton = document.getElementById("applyButton");
+
+      async function applyChanges() {
+        if (!applyButton) {
+          return;
+        }
+
+        try {
+          applyButton.disabled = true;
+          setStatus("Running commit_gh to push changes to Git...", "idle");
+
+          const res = await fetch("/api/apply", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+          });
+
+          if (!res.ok) {
+            setStatus("Failed to push changes to Git.", "error");
+            return;
+          }
+
+          const data = await res.json();
+          setStatus(
+            "Changes pushed to Git. Your HCP Terraform workspace will pick them up.",
+            "ok",
+          );
+          console.debug("Apply response:", data);
+
+          // Refresh meta so the last commit info updates
+          loadMeta();
+        } catch (err) {
+          console.error(err);
+          setStatus("Error while pushing changes to Git.", "error");
+        } finally {
+          applyButton.disabled = false;
+        }
+      }
+
+      if (applyButton) {
+        applyButton.addEventListener("click", () => {
+          applyChanges();
         });
       }
 
