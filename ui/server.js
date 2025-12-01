@@ -61,6 +61,16 @@ function runCommand(cmd, options = {}) {
   });
 }
 
+// Lightweight helper to detect if a command exists in PATH
+async function hasCommand(cmd) {
+  try {
+    await runCommand(`command -v ${cmd}`);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 // Read current flags from features.auto.tfvars or fall back to defaults
 async function readFlags() {
   try {
