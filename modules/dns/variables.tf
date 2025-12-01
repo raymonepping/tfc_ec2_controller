@@ -23,3 +23,9 @@ variable "alb_zone_id" {
   description = "ALB hosted zone id for alias target"
   type        = string
 }
+
+variable "tags" {
+  description = "Tags to apply to DNS resources where supported"
+  type        = map(string)
+  default     = {}
+}

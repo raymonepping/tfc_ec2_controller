@@ -4,7 +4,8 @@
   "description": "````markdown # EC2 + ALB Modular Demo with Terraform",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write ui/public/*.html ui/public/*.js ui/public/*.css"
   },
   "repository": {
     "type": "git",
@@ -20,5 +21,8 @@
   "homepage": "https://github.com/raymonepping/tfc_ec2_controller#readme",
   "dependencies": {
     "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.7.3"
   }
 }

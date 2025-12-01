@@ -3,7 +3,7 @@
 // Minimal control panel for Terraform feature flags.
 // - Reads and writes features.auto.tfvars in the repo root
 // - Exposes a JSON API for the browser UI
-// - Calls commit_gh so HCP Terraform picks up changes
+// - Calls commit_gh when /api/apply is used so HCP Terraform picks up changes
 
 const express = require("express");
 const path = require("path");
@@ -26,7 +26,7 @@ const BOOL_FLAG_KEYS = [
   "enable_storage",
   "enable_iam",
   "enable_vpc",
-  "data_volume_encrypted",  
+  "data_volume_encrypted",
 ];
 
 const INSTANCE_COUNT_KEY = "instance_count";
@@ -41,7 +41,7 @@ const DEFAULT_FLAGS = {
   enable_storage: true,
   enable_iam: true,
   enable_vpc: false,
-  data_volume_encrypted: false,  
+  data_volume_encrypted: false,
   instance_count: 2,
   os_type: "rhel10",
 };
@@ -86,10 +86,10 @@ async function readFlags() {
 
     // os_type
     const osMatch = content.match(
-      new RegExp(`^${OS_TYPE_KEY}\\s*=\\s*"(.*)"`, "m"),
+      new RegExp(`^${OS_TYPE_KEY}\\s*=\\s*"(.*?)"`, "m"),
     );
-    if (osMatch && osMatch[1]) {
-      flags.os_type = osMatch[1] === "rhel9" ? "rhel9" : "rhel10";
+    if (osMatch) {
+      flags.os_type = osMatch[1];
     }
 
     return flags;
@@ -185,7 +185,7 @@ app.get("/api/meta", async (req, res) => {
   }
 });
 
-// API: update flags and trigger commit_gh
+// API: update flags only (no git push)
 app.post("/api/features", async (req, res) => {
   try {
     const body = req.body || {};
@@ -207,26 +207,38 @@ app.post("/api/features", async (req, res) => {
       }
     }
 
-    // os_type, clamp to rhel9 or rhel10
+    // os_type
     if (Object.prototype.hasOwnProperty.call(body, OS_TYPE_KEY)) {
-      const raw = String(body[OS_TYPE_KEY] || "").toLowerCase();
-      next.os_type = raw === "rhel9" ? "rhel9" : "rhel10";
+      const v = String(body[OS_TYPE_KEY] || "").toLowerCase();
+      next.os_type = v === "rhel9" ? "rhel9" : "rhel10";
     }
 
     await writeFlags(next);
-    const gitResult = await commitAndPush();
 
     res.json({
       ok: true,
       flags: next,
+    });
+  } catch (err) {
+    console.error("Failed to update flags:", err);
+    res.status(500).json({ error: "Failed to update feature flags" });
+  }
+});
+
+// API: apply changes by running commit_gh once
+app.post("/api/apply", async (req, res) => {
+  try {
+    const gitResult = await commitAndPush();
+    res.json({
+      ok: true,
       git: {
         stdout: gitResult.stdout,
         stderr: gitResult.stderr,
       },
     });
   } catch (err) {
-    console.error("Failed to update flags or push to Git:", err);
-    res.status(500).json({ error: "Failed to update flags or push to Git" });
+    console.error("Failed to push changes to Git:", err);
+    res.status(500).json({ error: "Failed to push changes to Git" });
   }
 });
 

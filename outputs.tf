@@ -84,3 +84,19 @@ output "subnet_ids_effective" {
   description = "Subnet IDs actually used by the stack (managed or existing)"
   value       = local.effective_subnet_ids
 }
+
+
+output "stack_version" {
+  description = "Version label for this EC2 control panel stack"
+  value       = local.stack_version
+}
+
+output "module_versions" {
+  description = "Internal version map of included modules"
+  value       = local.module_versions
+}
+
+output "module_versions_json" {
+  description = "Module versions as a JSON string for dashboards or tooling"
+  value       = jsonencode(local.module_versions)
+}

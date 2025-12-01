@@ -15,3 +15,9 @@ variable "ami_id_override" {
   type        = string
   default     = ""
 }
+
+variable "tags" {
+  description = "Tags to apply to AMI resources where supported"
+  type        = map(string)
+  default     = {}
+}

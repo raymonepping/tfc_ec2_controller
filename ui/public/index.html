@@ -6,7 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
       :root {
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
           sans-serif;
         background-color: #050913;
         color: #f8fafc;
@@ -250,6 +254,27 @@
         font-size: 0.75rem;
         color: #6b7280;
       }
+
+      .apply-button {
+        padding: 6px 14px;
+        border-radius: 999px;
+        border: 1px solid #38bdf8;
+        background: linear-gradient(to right, #2563eb, #38bdf8);
+        color: #f9fafb;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+
+      .apply-button:hover {
+        filter: brightness(1.05);
+      }
+
+      .apply-button:disabled {
+        opacity: 0.6;
+        cursor: default;
+      }
     </style>
   </head>
   <body>
@@ -404,18 +429,18 @@
             </label>
           </div>
 
-        <div class="toggle-row">
-        <div>
-            <div class="toggle-label">Encrypt data volumes</div>
-            <div class="toggle-description">
-            Use encrypted EBS volumes for the additional data disks.
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-label">Encrypt data volumes</div>
+              <div class="toggle-description">
+                Use encrypted EBS volumes for the additional data disks.
+              </div>
             </div>
-        </div>
-        <label class="switch">
-            <input type="checkbox" id="data_volume_encrypted" />
-            <span class="slider"></span>
-        </label>
-        </div>          
+            <label class="switch">
+              <input type="checkbox" id="data_volume_encrypted" />
+              <span class="slider"></span>
+            </label>
+          </div>
 
           <div class="toggle-row">
             <div>
@@ -436,13 +461,18 @@
         <div class="status-message" id="statusMessage">
           Waiting for flag state from the backend...
         </div>
-        <div class="status-badge" id="statusBadge">Idle</div>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <button id="applyButton" class="apply-button">
+            Apply changes to Git
+          </button>
+          <div class="status-badge" id="statusBadge">Idle</div>
+        </div>
       </div>
 
       <div class="footer">
-        Changes here do not run Terraform directly. They write
-        <code>features.auto.tfvars</code> and push a commit so your HCP Terraform
-        workspace can do the heavy lifting.
+        Changing the controls only updates <code>features.auto.tfvars</code>.
+        Use <strong>Apply changes to Git</strong> to create a commit so your HCP
+        Terraform workspace can do the heavy lifting.
       </div>
     </div>
 
@@ -455,7 +485,7 @@
         "enable_storage",
         "enable_iam",
         "enable_vpc",
-        "data_volume_encrypted",        
+        "data_volume_encrypted",
       ];
 
       const statusMessage = document.getElementById("statusMessage");
@@ -463,7 +493,9 @@
       const metaBox = document.getElementById("meta");
 
       const instanceCountInput = document.getElementById("instance_count");
-      const instanceCountValue = document.getElementById("instance_count_value");
+      const instanceCountValue = document.getElementById(
+        "instance_count_value",
+      );
       const osTypeSelect = document.getElementById("os_type");
 
       function setStatus(message, state = "idle") {

@@ -2,6 +2,8 @@
 # Root composition module
 #
 # This file wires together the building blocks for the demo:
+#   - ami        – dynamic RHEL 10 AMI lookup
+#   - vpc        – optional managed VPC and public subnets
 #   - tags       – central tagging logic
 #   - network    – security group and ingress rules
 #   - compute    – EC2 instances behind the ALB
@@ -19,6 +21,16 @@ module "ami" {
   os_type         = var.os_type
   architecture    = var.architecture
   ami_id_override = var.ami_id
+
+  # Tagging resources inside the ami module
+  tags = merge(
+    module.tags.effective_tags,
+    {
+      Module        = "ami"
+      ModuleVersion = local.module_versions.ami
+    }
+  )
+
 }
 
 ##############################################################################
@@ -66,7 +78,13 @@ module "tags" {
   cost_center = var.cost_center
   application = var.application
   owner       = var.owner
-  extra_tags  = var.extra_tags
+  extra_tags = merge(
+    var.extra_tags,
+    {
+      StackVersion  = local.stack_version
+      ModulesSchema = "v1"
+    }
+  )
 }
 
 ##############################################################################
@@ -86,7 +104,16 @@ module "vpc" {
   vpc_cidr_block      = var.vpc_cidr_block
   azs                 = var.vpc_azs
   public_subnet_cidrs = var.public_subnet_cidrs
-  tags                = module.tags.effective_tags
+
+  # Tagging resources inside the vpc module
+  tags = merge(
+    module.tags.effective_tags,
+    {
+      Module        = "vpc"
+      ModuleVersion = local.module_versions.vpc
+    }
+  )
+
 }
 
 ##############################################################################
@@ -119,7 +146,15 @@ module "storage" {
   encrypted  = var.data_volume_encrypted
   kms_key_id = var.data_volume_kms_key_id
 
-  tags               = module.tags.effective_tags
+  # Tagging resources inside the storage module
+  tags = merge(
+    module.tags.effective_tags,
+    {
+      Module        = "storage"
+      ModuleVersion = local.module_versions.storage
+    }
+  )
+
 }
 
 ##############################################################################
@@ -137,7 +172,16 @@ module "network" {
   security_group_name = var.security_group_name
   ssh_ingress_cidr    = var.ssh_ingress_cidr
   http_ingress_cidr   = var.http_ingress_cidr
-  tags                = module.tags.effective_tags
+
+  # Tagging resources inside the network module
+  tags = merge(
+    module.tags.effective_tags,
+    {
+      Module        = "network"
+      ModuleVersion = local.module_versions.network
+    }
+  )
+
 }
 
 ##############################################################################
@@ -164,7 +208,15 @@ module "compute" {
   security_group_id    = module.network.security_group_id
   ssh_key_name         = var.ssh_key_name
   ami_id               = local.effective_ami_id
-  tags                 = module.tags.effective_tags
+
+  # Tagging resources inside the compute module
+  tags = merge(
+    module.tags.effective_tags,
+    {
+      Module        = "compute"
+      ModuleVersion = local.module_versions.compute
+    }
+  )
 
   # Storage configuration
   root_volume_size = var.root_volume_size
@@ -187,7 +239,16 @@ module "iam" {
   role_name             = var.iam_role_name
   instance_profile_name = var.iam_instance_profile_name
   policy_arns           = var.iam_policy_arns
-  tags                  = module.tags.effective_tags
+
+  # Tagging resources inside the iam module
+  tags = merge(
+    module.tags.effective_tags,
+    {
+      Module        = "iam"
+      ModuleVersion = local.module_versions.iam
+    }
+  )
+
 }
 
 
@@ -211,7 +272,16 @@ module "alb" {
   alb_name      = "ec2-demo-alb"
   listener_port = 80
   target_port   = 80
-  tags          = module.tags.effective_tags
+
+  # Tagging resources inside the iam module
+  tags = merge(
+    module.tags.effective_tags,
+    {
+      Module        = "alb"
+      ModuleVersion = local.module_versions.alb
+    }
+  )
+
 }
 
 ##############################################################################
@@ -235,4 +305,14 @@ module "dns" {
 
   alb_dns_name = module.alb[0].alb_dns_name
   alb_zone_id  = module.alb[0].alb_zone_id
+
+  # Tagging resources inside the dns module
+  tags = merge(
+    module.tags.effective_tags,
+    {
+      Module        = "dns"
+      ModuleVersion = local.module_versions.dns
+    }
+  )
+
 }
