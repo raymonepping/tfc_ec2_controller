@@ -1,6 +1,6 @@
 # variables.tf
 variable "profile" {
-  description = "High level deployment profile (for example personal, workshop, demo)"
+  description = "High level profile that selects a bundle of defaults (personal, workshop, etc)."
   type        = string
   default     = "personal"
 }
@@ -178,25 +178,25 @@ variable "data_volume_kms_key_id" {
 variable "environment" {
   description = "Environment name for tagging (for example dev, stage, prod)."
   type        = string
-  default     = "dev"
+  default     = null
 }
 
 variable "cost_center" {
   description = "Cost center for tagging."
   type        = string
-  default     = "personal"
+  default     = null
 }
 
 variable "application" {
   description = "Application name for tagging."
   type        = string
-  default     = "ec2-demo"
+  default     = null
 }
 
 variable "owner" {
   description = "Owner or team for tagging."
   type        = string
-  default     = "team-ec2-demo"
+  default     = null
 }
 
 
