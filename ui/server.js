@@ -134,30 +134,39 @@ async function writeFlags(flags) {
 }
 
 // Call commit_gh in the repo root, with a fallback to ./commit_gh.sh
+// Call commit_gh in the repo root, with a fallback to ./commit_gh.sh
 async function commitAndPush() {
-  // First attempt: Brew commit_gh from PATH
-  try {
-    const result = await runCommand("commit_gh", {
-      cwd: REPO_ROOT,
-    });
+  const hasBrewCommitGh = await hasCommand("commit_gh");
 
-    if (result.stderr && result.stderr.trim().length > 0) {
-      console.error(result.stderr);
+  // 1) Preferred path: Brew-based commit_gh CLI, if available
+  if (hasBrewCommitGh) {
+    try {
+      const result = await runCommand("commit_gh", {
+        cwd: REPO_ROOT,
+      });
+
+      if (result.stderr && result.stderr.trim().length > 0) {
+        console.error(result.stderr);
+      }
+      console.debug(result.stdout);
+
+      return result;
+    } catch (err) {
+      // Only warn if commit_gh *should* exist but failed for some other reason
+      console.warn(
+        "[server] commit_gh is in PATH but failed, falling back to ./commit_gh.sh",
+      );
     }
-    console.log(result.stdout);
-
-    return result;
-  } catch (primaryError) {
-    console.warn(
-      "[server] commit_gh from PATH failed, falling back to ./commit_gh.sh",
-      primaryError,
+  } else {
+    // No Brew CLI installed: quietly fall back, no scary error
+    console.debug(
+      "[server] commit_gh not found in PATH, using ./commit_gh.sh fallback",
     );
   }
 
-  // Fallback: repo local commit_gh.sh
-  const fallbackCmd = process.platform === "win32"
-    ? "bash ./commit_gh.sh"
-    : "./commit_gh.sh";
+  // 2) Fallback: repo-local commit_gh.sh
+  const fallbackCmd =
+    process.platform === "win32" ? "bash ./commit_gh.sh" : "./commit_gh.sh";
 
   const { stdout, stderr } = await runCommand(fallbackCmd, {
     cwd: REPO_ROOT,
@@ -166,7 +175,7 @@ async function commitAndPush() {
   if (stderr && stderr.trim().length > 0) {
     console.error(stderr);
   }
-  console.log(stdout);
+  console.debug(stdout);
 
   return { stdout, stderr };
 }
