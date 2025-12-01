@@ -68,24 +68,23 @@ locals {
   # Base VPC ID from user inputs and lookups
   base_vpc_id = (
     var.vpc_id != "" ? var.vpc_id :
-    (var.vpc_name != "" && length(data.aws_vpc.selected_by_name) > 0
+    (var.vpc_name != "" && !var.enable_vpc && length(data.aws_vpc.selected_by_name) > 0
       ? data.aws_vpc.selected_by_name[0].id
     : null)
   )
 
-  # Whether we are using the managed VPC module
   use_managed_vpc = var.enable_stack && var.enable_vpc && length(module.vpc) > 0
 
-  # Final VPC id that all modules should use
   effective_vpc_id = local.use_managed_vpc ? module.vpc[0].vpc_id : local.base_vpc_id
 
-  # Subnets discovered by tag when explicit subnet_ids are not provided
-  discovered_subnet_ids = length(data.aws_subnets.selected_by_tier) > 0 ? data.aws_subnets.selected_by_tier[0].ids : []
+  discovered_subnet_ids = (
+    length(data.aws_subnets.selected_by_tier) > 0
+    ? data.aws_subnets.selected_by_tier[0].ids
+    : []
+  )
 
-  # Final subnet list that ALB and compute will use
   effective_subnet_ids = local.use_managed_vpc ? module.vpc[0].public_subnet_ids : (length(var.subnet_ids) > 0 ? var.subnet_ids : local.discovered_subnet_ids)
 
-  # Single subnet used for EC2 instances
   effective_subnet_id = (
     var.instance_subnet_id != null && var.instance_subnet_id != "" ?
     var.instance_subnet_id :
