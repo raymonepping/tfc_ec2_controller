@@ -34,36 +34,6 @@ module "ami" {
 }
 
 ##############################################################################
-# Locals – helper values for AMI and subnet selection
-##############################################################################
-locals {
-
-  # Choose between explicit AMI and the dynamic lookup module.
-  effective_ami_id = module.ami.ami_id
-
-  # Choose between managed VPC and existing VPC
-  effective_vpc_id = (
-    var.enable_stack && var.enable_vpc && length(module.vpc) > 0
-  ) ? module.vpc[0].vpc_id : var.vpc_id
-
-  # Choose between managed public subnets and provided subnet_ids
-  effective_subnet_ids = (
-    var.enable_stack && var.enable_vpc && length(module.vpc) > 0
-  ) ? module.vpc[0].public_subnet_ids : var.subnet_ids
-
-  # Subnet that EC2 instances will use
-  # When enable_vpc = true, always take a subnet from the managed VPC.
-  # When enable_vpc = false, use instance_subnet_id if set, else fall back to subnet_ids[0].
-  effective_subnet_id = (
-    var.enable_vpc && length(local.effective_subnet_ids) > 0
-    ) ? local.effective_subnet_ids[0] : (
-    var.instance_subnet_id != null && var.instance_subnet_id != "" ?
-    var.instance_subnet_id :
-    var.subnet_ids[0]
-  )
-}
-
-##############################################################################
 # Tag module – central place for tag strategy
 #
 # The tags module takes high level inputs
