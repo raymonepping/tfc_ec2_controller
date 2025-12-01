@@ -116,12 +116,7 @@ variable "architecture" {
 variable "tags" {
   description = "Base tags map. Currently not wired into the tags module, but kept for future extension."
   type        = map(string)
-  default = {
-    Terraform  = "true"
-    CostCenter = "personal"
-    OS         = "RHEL"
-    Role       = "webserver"
-  }
+  default     = null
 }
 
 ##############################################################################
