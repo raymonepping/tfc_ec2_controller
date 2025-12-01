@@ -178,22 +178,27 @@ variable "data_volume_kms_key_id" {
 variable "environment" {
   description = "Environment name for tagging (for example dev, stage, prod)."
   type        = string
+  default     = "dev"
 }
 
 variable "cost_center" {
   description = "Cost center for tagging."
   type        = string
+  default     = "personal"
 }
 
 variable "application" {
   description = "Application name for tagging."
   type        = string
+  default     = "ec2-demo"
 }
 
 variable "owner" {
   description = "Owner or team for tagging."
   type        = string
+  default     = "team-ec2-demo"
 }
+
 
 variable "extra_tags" {
   description = "Optional extra tags to merge into the base tag set."

@@ -2,7 +2,7 @@
 # Tagging metadata
 # These flow into the tags module and end up on every resource
 ##############################################################################
-profile     = "personal"
+profile = "personal"
 # environment = "dev"
 # cost_center = "personal"
 # application = "ec2-alb-demo"
