@@ -5,13 +5,13 @@
 ##############################################################################
 
 enable_stack = true
-enable_instances = false
+enable_instances = true
 enable_alb = false
 enable_dns = false
 enable_storage = false
 enable_iam = false
 enable_vpc = false
-data_volume_encrypted = false
+data_volume_encrypted = true
 
 # Non-boolean controls
 instance_count = 0
