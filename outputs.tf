@@ -18,8 +18,8 @@ output "instance_azs" {
 }
 
 output "security_group_id" {
-  description = "ID of the EC2 instances security group"
-  value       = module.network.security_group_id
+  description = "Security group id for the EC2 instances, if created"
+  value       = local.use_network && length(module.network) > 0 ? module.network[0].security_group_id : ""
 }
 
 output "subnet_id_effective" {

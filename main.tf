@@ -137,13 +137,13 @@ module "storage" {
 ##############################################################################
 module "network" {
   source = "./modules/network"
+  count  = local.use_network ? 1 : 0
 
   vpc_id              = local.effective_vpc_id
   security_group_name = var.security_group_name
   ssh_ingress_cidr    = var.ssh_ingress_cidr
   http_ingress_cidr   = var.http_ingress_cidr
 
-  # Tagging resources inside the network module
   tags = merge(
     module.tags.effective_tags,
     {
@@ -151,7 +151,6 @@ module "network" {
       ModuleVersion = local.module_versions.network
     }
   )
-
 }
 
 ##############################################################################
@@ -176,8 +175,8 @@ module "compute" {
   instance_type        = local.effective_instance_type
   instance_name_prefix = local.effective_instance_name_prefix
   subnet_id            = local.effective_subnet_id
-  security_group_id    = module.network.security_group_id
   ssh_key_name         = local.effective_ssh_key_name
+  security_group_id    = local.use_network && length(module.network) > 0 ? module.network[0].security_group_id : null
 
   # Tagging resources inside the compute module
   tags = merge(

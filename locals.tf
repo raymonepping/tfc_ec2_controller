@@ -40,6 +40,16 @@ locals {
 }
 
 ##############################################################################
+# Network enablement
+##############################################################################
+
+locals {
+  # We only need the network module when the stack is on
+  # and we intend to run either EC2 instances or an ALB.
+  use_network = var.enable_stack && (var.enable_instances || var.enable_alb)
+}
+
+##############################################################################
 # VPC and subnet resolution
 ##############################################################################
 
