@@ -74,10 +74,10 @@ locals {
 ##############################################################################
 module "tags" {
   source      = "./modules/tags"
-  environment = var.environment
-  cost_center = var.cost_center
-  application = var.application
-  owner       = var.owner
+  environment = local.effective_environment
+  cost_center = local.effective_cost_center
+  application = local.effective_application
+  owner       = local.effective_owner
   extra_tags = merge(
     var.extra_tags,
     {

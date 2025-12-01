@@ -22,7 +22,7 @@ terraform {
 ##############################################################################
 
 provider "aws" {
-  region = var.region
+  region = local.effective_region
 
   # Global default tags that are merged with module-level tags
   default_tags {

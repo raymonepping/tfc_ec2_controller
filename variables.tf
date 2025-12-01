@@ -1,3 +1,10 @@
+# variables.tf
+variable "profile" {
+  description = "High level deployment profile (for example personal, workshop, demo)"
+  type        = string
+  default     = "personal"
+}
+
 ##############################################################################
 # Root variables: region and network
 ##############################################################################
