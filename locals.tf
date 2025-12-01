@@ -20,6 +20,7 @@ locals {
       cost_center          = "personal"
       application          = "ec2-demo"
       owner                = "Raymon_Epping"
+      ssh_key_name         = "my-keypair"
       region               = "eu-north-1"
       instance_type        = "t3.micro"
       instance_name_prefix = "rhel-demo"
@@ -30,6 +31,7 @@ locals {
       cost_center          = "training"
       application          = "ec2-alb-demo"
       owner                = "workshop-team"
+      ssh_key_name         = "my-keypair"
       region               = "eu-west-1"
       instance_type        = "t3.micro"
       instance_name_prefix = "rhel-demo"
@@ -40,14 +42,12 @@ locals {
 }
 
 locals {
-  effective_region      = coalesce(var.region, local.profile_settings.region)
-  effective_environment = coalesce(var.environment, local.profile_settings.environment)
-  effective_cost_center = coalesce(var.cost_center, local.profile_settings.cost_center)
-  effective_application = coalesce(var.application, local.profile_settings.application)
-  effective_owner       = coalesce(var.owner, local.profile_settings.owner)
-}
-
-locals {
+  effective_region               = coalesce(var.region, local.profile_settings.region)
+  effective_environment          = coalesce(var.environment, local.profile_settings.environment)
+  effective_cost_center          = coalesce(var.cost_center, local.profile_settings.cost_center)
+  effective_application          = coalesce(var.application, local.profile_settings.application)
+  effective_owner                = coalesce(var.owner, local.profile_settings.owner)
+  effective_ssh_key_name         = coalesce(var.ssh_key_name, local.profile_settings.ssh_key_name)
   effective_instance_type        = coalesce(var.instance_type, try(local.profile_settings.instance_type, null), "t3.micro")
   effective_instance_name_prefix = coalesce(var.instance_name_prefix, try(local.profile_settings.instance_name_prefix, null), "rhel-demo")
 }

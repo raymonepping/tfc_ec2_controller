@@ -147,8 +147,14 @@ variable "instance_name_prefix" {
 }
 
 variable "ssh_key_name" {
-  description = "Existing EC2 key pair name used for SSH access."
+  description = <<EOT
+Existing EC2 key pair name used for SSH access.
+
+If null, the value is taken from the selected profile in locals.profiles.
+Typically, HCP Terraform workspaces override this via a workspace variable.
+EOT
   type        = string
+  default     = null
 }
 
 variable "security_group_name" {
@@ -331,4 +337,10 @@ variable "iam_policy_arns" {
   default = [
     "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   ]
+}
+
+variable "root_volume_encrypted" {
+  description = "Whether the root volume should be encrypted."
+  type        = bool
+  default     = false
 }

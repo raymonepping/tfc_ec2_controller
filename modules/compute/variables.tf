@@ -67,3 +67,9 @@ variable "enable_instances" {
   type        = bool
   default     = true
 }
+
+variable "root_volume_encrypted" {
+  description = "Whether the root EBS volume for this instance should be encrypted."
+  type        = bool
+  default     = false
+}

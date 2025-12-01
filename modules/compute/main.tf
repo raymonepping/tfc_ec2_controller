@@ -19,7 +19,7 @@ resource "aws_instance" "web_server" {
   root_block_device {
     volume_size           = var.root_volume_size
     volume_type           = var.root_volume_type
-    encrypted             = true
+    encrypted             = var.root_volume_encrypted
     delete_on_termination = true
   }
 

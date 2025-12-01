@@ -178,7 +178,7 @@ module "compute" {
   instance_name_prefix = local.effective_instance_name_prefix
   subnet_id            = local.effective_subnet_id
   security_group_id    = module.network.security_group_id
-  ssh_key_name         = var.ssh_key_name
+  ssh_key_name         = local.effective_ssh_key_name
 
   # Tagging resources inside the compute module
   tags = merge(
@@ -190,8 +190,9 @@ module "compute" {
   )
 
   # Storage configuration
-  root_volume_size = var.root_volume_size
-  root_volume_type = var.root_volume_type
+  root_volume_size      = var.root_volume_size
+  root_volume_type      = var.root_volume_type
+  root_volume_encrypted = var.root_volume_encrypted
 
   # Lifecycle guardrail input
   architecture = var.architecture
@@ -269,7 +270,7 @@ module "dns" {
   source = "./modules/dns"
   count  = var.enable_stack && var.enable_alb && var.enable_dns ? 1 : 0
 
-  create_record = var.create_dns_record
+  create_record = var.enable_dns
   zone_id       = var.route53_zone_id
   record_name   = var.route53_record_name
 

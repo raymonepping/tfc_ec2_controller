@@ -29,7 +29,7 @@ profile = "personal"
 # instance_name_prefix = "rhel-demo"
 
 # Existing EC2 key pair name for SSH access
-ssh_key_name = "my-keypair"
+# ssh_key_name = "my-keypair"
 
 ##############################################################################
 # AMI and lifecycle guardrail
@@ -51,7 +51,7 @@ data_volume_size        = 50
 data_volume_type        = "gp3"
 data_volume_device_name = "/dev/xvdb"
 
-data_volume_encrypted = false
+# data_volume_encrypted = false
 
 # Optionally specify a KMS key ARN to use for data volume encryption
 # data_volume_kms_key_id  = "arn:aws:kms:eu-north-1:123456789012:key/..."
@@ -62,7 +62,7 @@ data_volume_encrypted = false
 
 # When true, the dns module creates an A record in this hosted zone
 # that aliases to the ALB DNS name.
-create_dns_record = true
+# create_dns_record = true
 
 route53_zone_id     = "Z08325331FB981V6E7LSO"
 route53_record_name = "ec2-demo.raymon-epping.sbx.hashidemos.io"
