@@ -14,5 +14,5 @@ enable_vpc            = true
 data_volume_encrypted = true
 
 # Non-boolean controls
-instance_count = 10
+instance_count = 0
 os_type        = "rhel10"
