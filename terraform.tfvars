@@ -1,16 +1,19 @@
 ##############################################################################
-# Tagging / profile
+# Optional overrides for local CLI runs
+# Most real values should come from HCP Terraform workspace variables.
 ##############################################################################
+
 profile = "personal"
 
 ##############################################################################
-# EC2 connectivity
+# Optional overrides for local CLI runs
+# Most real values should come from HCP Terraform workspace variables.
 ##############################################################################
-# ssh_key_name = "my-keypair"
-
-##############################################################################
-# DNS integration (Route53 alias record for the ALB)
-##############################################################################
-# create_dns_record   = true
-# route53_zone_id     = "Z08325331FB981V6E7LSO"
-# route53_record_name = "ec2-demo.raymon-epping.sbx.hashidemos.io"
+# region                = "eu-north-1"
+# vpc_id                = "vpc-..."
+# subnet_ids            = ["subnet-...", "subnet-...", "subnet-..."]
+# ssh_key_name          = "my-keypair"
+# ami_id                = "ami-..."   # leave empty to use automatic RHEL lookup
+# create_dns_record     = true
+# route53_zone_id       = "Z0..."
+# route53_record_name   = "ec2-demo.example.com"
