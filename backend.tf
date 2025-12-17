@@ -15,8 +15,18 @@
 #   - Treat state as sensitive, since it can contain credentials or secrets
 ##############################################################################
 
+# terraform {
+#  backend "local" {
+#    path = "terraform.tfstate"
+#  }
+#}
+
 terraform {
-  backend "local" {
-    path = "terraform.tfstate"
+  cloud {
+    organization = "optimus_prime"
+
+    workspaces {
+      name = "tfc_ec2_controller"
+    }
   }
 }
